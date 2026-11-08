@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="estado_cargando">Cargando…</string>
+    <string name="estado_error_titulo">Algo salió mal</string>
+    <string name="estado_error_ejemplo">No hay conexión a internet</string>
+    <string name="estado_reintentar">Reintentar</string>
+    <string name="estado_vacio_titulo">No hay productos</string>
+    <string name="estado_vacio_mensaje">Todavía no hay productos para mostrar.</string>
+</resources>
