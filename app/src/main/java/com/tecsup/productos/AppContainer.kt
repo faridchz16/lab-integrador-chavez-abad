@@ -1,6 +1,8 @@
 package com.tecsup.productos
 
 import android.content.Context
+import androidx.room.Room
+import com.tecsup.productos.data.local.AppDatabase
 import com.tecsup.productos.data.remote.ApiService
 import com.tecsup.productos.data.remote.RetrofitClient
 import com.tecsup.productos.data.repository.ItemRepository
@@ -10,7 +12,11 @@ class AppContainer(private val context: Context) {
 
     private val api: ApiService = RetrofitClient.api
 
+    private val database: AppDatabase by lazy {
+        Room.databaseBuilder(context, AppDatabase::class.java, "productos.db").build()
+    }
+
     val itemRepository: ItemRepository by lazy {
-        ItemRepositoryImpl(api)
+        ItemRepositoryImpl(api, database.itemDao())
     }
 }
