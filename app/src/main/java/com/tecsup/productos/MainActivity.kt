@@ -5,31 +5,31 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import com.tecsup.productos.ui.UiState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.tecsup.productos.ui.lista.ListaScreen
-import com.tecsup.productos.ui.lista.ProductosDePrueba
+import com.tecsup.productos.ui.lista.ListaViewModel
 import com.tecsup.productos.ui.theme.ProductosTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        val app = application as ProductosApp
         setContent {
             ProductosTheme {
-                var productos by remember { mutableStateOf(ProductosDePrueba.lista) }
+                val listaViewModel: ListaViewModel = viewModel(
+                    factory = ListaViewModel.factory(app.container)
+                )
+                val estado by listaViewModel.estado.collectAsStateWithLifecycle()
+                val aviso by listaViewModel.aviso.collectAsStateWithLifecycle()
+
                 ListaScreen(
-                    estado = UiState.Exito(productos),
-                    aviso = null,
-                    onReintentar = {},
-                    onProductoClick = {},
-                    onAlternarFavorito = { id ->
-                        productos = productos.map {
-                            if (it.id == id) it.copy(esFavorito = !it.esFavorito) else it
-                        }
-                    }
+                    estado = estado,
+                    aviso = aviso,
+                    onReintentar = listaViewModel::refrescar,
+                    onProductoClick = { /* el detalle lo conecta Abad en H7/H14 */ },
+                    onAlternarFavorito = listaViewModel::alternarFavorito
                 )
             }
         }
