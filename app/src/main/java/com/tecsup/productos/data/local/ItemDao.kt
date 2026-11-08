@@ -20,6 +20,9 @@ interface ItemDao {
     @Query("SELECT esFavorito FROM items WHERE id = :id")
     suspend fun esFavorito(id: Int): Boolean?
 
+    @Query("SELECT * FROM items WHERE id = :id")
+    suspend fun porId(id: Int): ItemEntity?
+
     @Query("SELECT COUNT(*) FROM items")
     suspend fun contar(): Int
 

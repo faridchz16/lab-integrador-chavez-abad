@@ -37,7 +37,8 @@ class ItemRepositoryImpl(
         val esFavorito = dao.esFavorito(id) ?: false
         Result.success(api.detalle(id).aModelo(esFavorito))
     } catch (e: IOException) {
-        Result.failure(e)
+        val guardado = dao.porId(id)
+        if (guardado != null) Result.success(guardado.aModelo()) else Result.failure(e)
     } catch (e: HttpException) {
         Result.failure(e)
     }

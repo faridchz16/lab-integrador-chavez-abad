@@ -13,6 +13,7 @@ fun ItemDto.aEntity(esFavorito: Boolean = false): ItemEntity = ItemEntity(
     rating = rating,
     stock = stock,
     descuento = discountPercentage,
+    descripcion = description,
     esFavorito = esFavorito
 )
 
@@ -23,6 +24,7 @@ fun ItemEntity.aModelo(): Item = Item(
     precio = precio,
     imagenUrl = imagenUrl,
     esFavorito = esFavorito,
+    descripcion = descripcion,
     rating = rating,
     stock = stock,
     descuento = descuento

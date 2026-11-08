@@ -13,5 +13,6 @@ data class ItemEntity(
     val rating: Double,
     val stock: Int,
     val descuento: Double,
+    val descripcion: String = "",
     val esFavorito: Boolean = false
 )

@@ -13,7 +13,9 @@ class AppContainer(private val context: Context) {
     private val api: ApiService = RetrofitClient.api
 
     private val database: AppDatabase by lazy {
-        Room.databaseBuilder(context, AppDatabase::class.java, "productos.db").build()
+        Room.databaseBuilder(context, AppDatabase::class.java, "productos.db")
+            .fallbackToDestructiveMigration(dropAllTables = true)
+            .build()
     }
 
     val itemRepository: ItemRepository by lazy {
