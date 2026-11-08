@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="login_bienvenida">Bienvenido</string>
+    <string name="login_subtitulo">Ingresa con tu cuenta para ver el catálogo de productos.</string>
+    <string name="login_correo">Correo electrónico</string>
+    <string name="login_clave">Contraseña</string>
+    <string name="login_ingresar">Ingresar</string>
+    <string name="login_mostrar_clave">Mostrar contraseña</string>
+    <string name="login_ocultar_clave">Ocultar contraseña</string>
+    <string name="login_error_correo_vacio">Ingresa tu correo electrónico</string>
+    <string name="login_error_correo_formato">Ingresa un correo válido, por ejemplo nombre@dominio.com</string>
+    <string name="login_error_clave_vacia">Ingresa tu contraseña</string>
+    <string name="login_error_clave_corta">La contraseña debe tener al menos %1$d caracteres</string>
+    <string name="sesion_cerrar">Cerrar sesión</string>
+    <string name="sesion_cerrar_pregunta">¿Cerrar sesión?</string>
+    <string name="sesion_cerrar_mensaje">Tendrás que ingresar tu correo y contraseña de nuevo.</string>
+    <string name="sesion_cancelar">Cancelar</string>
+</resources>

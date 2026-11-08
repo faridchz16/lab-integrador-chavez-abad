@@ -1,9 +1,16 @@
 package com.tecsup.productos.ui.navigation
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -15,24 +22,85 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.tecsup.productos.AppContainer
 import com.tecsup.productos.R
+import com.tecsup.productos.domain.model.Sesion
+import com.tecsup.productos.ui.UiState
+import com.tecsup.productos.ui.components.Cargando
+import com.tecsup.productos.ui.components.DialogoCerrarSesion
 import com.tecsup.productos.ui.detalle.DetalleScreen
 import com.tecsup.productos.ui.detalle.DetalleViewModel
 import com.tecsup.productos.ui.favoritos.FavoritosScreen
 import com.tecsup.productos.ui.favoritos.FavoritosViewModel
 import com.tecsup.productos.ui.lista.ListaScreen
 import com.tecsup.productos.ui.lista.ListaViewModel
+import com.tecsup.productos.ui.login.LoginScreen
+import com.tecsup.productos.ui.login.LoginViewModel
 
 @Composable
 fun AppNav(
     container: AppContainer,
     modifier: Modifier = Modifier
 ) {
+    val sesionViewModel: SesionViewModel = viewModel(
+        factory = SesionViewModel.factory(container)
+    )
+    val estadoSesion by sesionViewModel.estado.collectAsStateWithLifecycle()
+
+    when (val estado = estadoSesion) {
+        is UiState.Exito -> NavegacionPrincipal(
+            container = container,
+            sesionInicial = estado.datos,
+            sesionViewModel = sesionViewModel,
+            modifier = modifier
+        )
+        else -> Surface(modifier = modifier.fillMaxSize()) {
+            Cargando()
+        }
+    }
+}
+
+@Composable
+private fun NavegacionPrincipal(
+    container: AppContainer,
+    sesionInicial: Sesion?,
+    sesionViewModel: SesionViewModel,
+    modifier: Modifier = Modifier
+) {
     val navController = rememberNavController()
+    val destinoInicial: Rutas = remember {
+        if (sesionInicial != null) Rutas.Lista else Rutas.Login
+    }
+    var mostrarDialogoSalir by rememberSaveable { mutableStateOf(false) }
+
     NavHost(
         navController = navController,
-        startDestination = Rutas.Lista,
+        startDestination = destinoInicial,
         modifier = modifier
     ) {
+        composable<Rutas.Login> {
+            val viewModel: LoginViewModel = viewModel(
+                factory = LoginViewModel.factory(container)
+            )
+            val formulario by viewModel.formulario.collectAsStateWithLifecycle()
+            val estado by viewModel.estado.collectAsStateWithLifecycle()
+
+            LaunchedEffect(estado) {
+                val actual = estado
+                if (actual is UiState.Exito) {
+                    sesionViewModel.establecer(actual.datos)
+                    navController.navigate(Rutas.Lista) {
+                        popUpTo<Rutas.Login> { inclusive = true }
+                    }
+                }
+            }
+
+            LoginScreen(
+                formulario = formulario,
+                estado = estado,
+                onCorreoChange = viewModel::cambiarCorreo,
+                onClaveChange = viewModel::cambiarClave,
+                onIngresar = viewModel::iniciarSesion
+            )
+        }
         composable<Rutas.Lista> {
             val viewModel: ListaViewModel = viewModel(
                 factory = ListaViewModel.factory(container)
@@ -50,6 +118,12 @@ fun AppNav(
                         Icon(
                             painter = painterResource(R.drawable.ic_favorito),
                             contentDescription = stringResource(R.string.favoritos_ver)
+                        )
+                    }
+                    IconButton(onClick = { mostrarDialogoSalir = true }) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_cerrar_sesion),
+                            contentDescription = stringResource(R.string.sesion_cerrar)
                         )
                     }
                 }
@@ -81,5 +155,18 @@ fun AppNav(
                 onAlternarFavorito = viewModel::alternarFavorito
             )
         }
+    }
+
+    if (mostrarDialogoSalir) {
+        DialogoCerrarSesion(
+            onConfirmar = {
+                mostrarDialogoSalir = false
+                sesionViewModel.cerrarSesion()
+                navController.navigate(Rutas.Login) {
+                    popUpTo(navController.graph.id) { inclusive = true }
+                }
+            },
+            onCancelar = { mostrarDialogoSalir = false }
+        )
     }
 }
