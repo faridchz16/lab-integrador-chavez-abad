@@ -21,8 +21,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tecsup.productos.R
 import com.tecsup.productos.domain.model.Item
-import com.tecsup.productos.domain.model.estadoStock
-import com.tecsup.productos.domain.model.tieneDescuento
 import com.tecsup.productos.ui.theme.ProductosTheme
 
 @Composable
@@ -62,21 +60,7 @@ fun ProductoCard(
                 Spacer(modifier = Modifier.height(4.dp))
                 PrecioProducto(item = item)
                 Spacer(modifier = Modifier.height(6.dp))
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    item.rating?.let { rating ->
-                        Text(
-                            text = stringResource(R.string.producto_rating, rating),
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                    }
-                    EtiquetaDescuento(item = item)
-                    if (item.tieneDescuento()) {
-                        Spacer(modifier = Modifier.width(6.dp))
-                    }
-                    EtiquetaStock(estado = item.estadoStock(), stock = item.stock)
-                }
+                EtiquetasProducto(item = item)
             }
             BotonFavorito(esFavorito = item.esFavorito, onClick = onAlternarFavorito)
         }

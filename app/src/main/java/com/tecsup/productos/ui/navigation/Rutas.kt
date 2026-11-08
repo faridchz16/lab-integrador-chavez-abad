@@ -1,0 +1,11 @@
+package com.tecsup.productos.ui.navigation
+
+import kotlinx.serialization.Serializable
+
+sealed interface Rutas {
+    @Serializable
+    data object Lista : Rutas
+
+    @Serializable
+    data class Detalle(val id: Int) : Rutas
+}
