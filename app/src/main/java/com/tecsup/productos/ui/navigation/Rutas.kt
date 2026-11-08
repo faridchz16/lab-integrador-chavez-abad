@@ -8,4 +8,7 @@ sealed interface Rutas {
 
     @Serializable
     data class Detalle(val id: Int) : Rutas
+
+    @Serializable
+    data object Favoritos : Rutas
 }

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="favoritos_titulo">Mis favoritos</string>
+    <string name="favoritos_ver">Ver favoritos</string>
+    <string name="favoritos_vacio_titulo">Aún no tienes favoritos</string>
+    <string name="favoritos_vacio_mensaje">Toca la estrella de un producto para guardarlo aquí.</string>
+    <string name="favoritos_quitado">Se quitó de favoritos</string>
+    <string name="favoritos_deshacer">Deshacer</string>
+</resources>
