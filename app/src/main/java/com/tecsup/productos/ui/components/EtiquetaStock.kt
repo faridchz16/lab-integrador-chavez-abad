@@ -46,6 +46,8 @@ fun EtiquetaStock(
         Text(
             text = estilo.first,
             style = MaterialTheme.typography.labelMedium,
+            maxLines = 1,
+            softWrap = false,
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
         )
     }
