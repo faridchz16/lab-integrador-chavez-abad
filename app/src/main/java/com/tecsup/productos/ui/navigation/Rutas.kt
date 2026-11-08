@@ -14,4 +14,7 @@ sealed interface Rutas {
 
     @Serializable
     data object Favoritos : Rutas
+
+    @Serializable
+    data object Admin : Rutas
 }

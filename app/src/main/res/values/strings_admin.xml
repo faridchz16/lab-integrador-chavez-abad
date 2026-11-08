@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="admin_titulo">Panel de administración</string>
+    <string name="admin_abrir">Abrir panel de administración</string>
+    <string name="admin_sesion">Sesión de administrador</string>
+    <string name="admin_resumen">Resumen</string>
+    <string name="admin_total_guardado">Productos guardados</string>
+    <string name="admin_total_favoritos">Favoritos</string>
+    <string name="admin_stock_bajo">Con stock bajo</string>
+    <string name="admin_agotados">Agotados</string>
+    <string name="admin_acciones">Acciones</string>
+    <string name="admin_sincronizar">Sincronizar ahora</string>
+    <string name="admin_sincronizar_ayuda">Descarga los productos desde internet y conserva los favoritos.</string>
+    <string name="admin_limpiar">Limpiar caché</string>
+    <string name="admin_limpiar_ayuda">Borra los productos guardados en el celular. Se recuperan al sincronizar.</string>
+    <string name="admin_limpiar_pregunta">¿Limpiar caché?</string>
+    <string name="admin_limpiar_mensaje">Se borrarán todos los productos guardados en el celular, incluidos los favoritos.</string>
+    <string name="admin_limpiar_confirmar">Limpiar</string>
+    <string name="admin_cancelar">Cancelar</string>
+    <string name="admin_cache_limpiada">Caché limpiada. Sincroniza para volver a descargar los productos.</string>
+    <plurals name="admin_sincronizado">
+        <item quantity="one">Se guardó %1$d producto</item>
+        <item quantity="many">Se guardaron %1$d productos</item>
+        <item quantity="other">Se guardaron %1$d productos</item>
+    </plurals>
+</resources>

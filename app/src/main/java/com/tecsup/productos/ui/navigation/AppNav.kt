@@ -9,6 +9,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -22,8 +23,11 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.tecsup.productos.AppContainer
 import com.tecsup.productos.R
+import com.tecsup.productos.domain.model.Rol
 import com.tecsup.productos.domain.model.Sesion
 import com.tecsup.productos.ui.UiState
+import com.tecsup.productos.ui.admin.AdminScreen
+import com.tecsup.productos.ui.admin.AdminViewModel
 import com.tecsup.productos.ui.components.Cargando
 import com.tecsup.productos.ui.components.DialogoCerrarSesion
 import com.tecsup.productos.ui.detalle.DetalleScreen
@@ -48,7 +52,7 @@ fun AppNav(
     when (val estado = estadoSesion) {
         is UiState.Exito -> NavegacionPrincipal(
             container = container,
-            sesionInicial = estado.datos,
+            sesion = estado.datos,
             sesionViewModel = sesionViewModel,
             modifier = modifier
         )
@@ -61,14 +65,15 @@ fun AppNav(
 @Composable
 private fun NavegacionPrincipal(
     container: AppContainer,
-    sesionInicial: Sesion?,
+    sesion: Sesion?,
     sesionViewModel: SesionViewModel,
     modifier: Modifier = Modifier
 ) {
     val navController = rememberNavController()
     val destinoInicial: Rutas = remember {
-        if (sesionInicial != null) Rutas.Lista else Rutas.Login
+        if (sesion != null) Rutas.Lista else Rutas.Login
     }
+    val sesionVigente by rememberUpdatedState(sesion)
     var mostrarDialogoSalir by rememberSaveable { mutableStateOf(false) }
 
     NavHost(
@@ -114,6 +119,14 @@ private fun NavegacionPrincipal(
                 onProductoClick = { id -> navController.navigate(Rutas.Detalle(id)) },
                 onAlternarFavorito = viewModel::alternarFavorito,
                 acciones = {
+                    if (sesionVigente?.rol == Rol.ADMIN) {
+                        IconButton(onClick = { navController.navigate(Rutas.Admin) }) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_panel_admin),
+                                contentDescription = stringResource(R.string.admin_abrir)
+                            )
+                        }
+                    }
                     IconButton(onClick = { navController.navigate(Rutas.Favoritos) }) {
                         Icon(
                             painter = painterResource(R.drawable.ic_favorito),
@@ -153,6 +166,29 @@ private fun NavegacionPrincipal(
                 onReintentar = viewModel::recargar,
                 onProductoClick = { id -> navController.navigate(Rutas.Detalle(id)) },
                 onAlternarFavorito = viewModel::alternarFavorito
+            )
+        }
+        composable<Rutas.Admin> {
+            val administrador = sesionVigente?.takeIf { it.rol == Rol.ADMIN }
+            if (administrador == null) {
+                LaunchedEffect(Unit) { navController.navigateUp() }
+                return@composable
+            }
+            val viewModel: AdminViewModel = viewModel(
+                factory = AdminViewModel.factory(container)
+            )
+            val estado by viewModel.estado.collectAsStateWithLifecycle()
+            val trabajando by viewModel.trabajando.collectAsStateWithLifecycle()
+            val resultado by viewModel.resultado.collectAsStateWithLifecycle()
+            AdminScreen(
+                correo = administrador.correo,
+                estado = estado,
+                trabajando = trabajando,
+                resultado = resultado,
+                onVolver = { navController.navigateUp() },
+                onSincronizar = viewModel::sincronizar,
+                onLimpiarCache = viewModel::limpiarCache,
+                onResultadoMostrado = viewModel::resultadoMostrado
             )
         }
     }
