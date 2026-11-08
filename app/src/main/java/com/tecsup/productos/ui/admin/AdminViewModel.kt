@@ -10,6 +10,7 @@ import com.tecsup.productos.data.repository.ItemRepository
 import com.tecsup.productos.domain.model.EstadoStock
 import com.tecsup.productos.domain.model.Item
 import com.tecsup.productos.domain.model.estadoStock
+import com.tecsup.productos.notification.Notificador
 import com.tecsup.productos.ui.UiState
 import com.tecsup.productos.ui.aMensajeUsuario
 import kotlinx.coroutines.CancellationException
@@ -36,7 +37,8 @@ sealed interface ResultadoAdmin {
 }
 
 class AdminViewModel(
-    private val repo: ItemRepository
+    private val repo: ItemRepository,
+    private val notificador: Notificador
 ) : ViewModel() {
 
     val estado: StateFlow<UiState<ResumenAdmin>> = repo.items
@@ -56,7 +58,10 @@ class AdminViewModel(
 
     fun sincronizar() = ejecutar {
         repo.refrescar().fold(
-            onSuccess = { cantidad -> ResultadoAdmin.Sincronizado(cantidad) },
+            onSuccess = { cantidad ->
+                notificador.mostrar(TITULO_NOTIFICACION, "Se guardaron $cantidad elementos")
+                ResultadoAdmin.Sincronizado(cantidad)
+            },
             onFailure = { error -> ResultadoAdmin.Error(error.aMensajeUsuario()) }
         )
     }
@@ -95,9 +100,10 @@ class AdminViewModel(
 
     companion object {
         private const val TIEMPO_ESPERA_MS = 5_000L
+        private const val TITULO_NOTIFICACION = "Datos actualizados"
 
         fun factory(container: AppContainer): ViewModelProvider.Factory = viewModelFactory {
-            initializer { AdminViewModel(container.itemRepository) }
+            initializer { AdminViewModel(container.itemRepository, container.notificador) }
         }
     }
 }

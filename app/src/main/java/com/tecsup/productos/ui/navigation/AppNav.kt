@@ -30,6 +30,7 @@ import com.tecsup.productos.ui.admin.AdminScreen
 import com.tecsup.productos.ui.admin.AdminViewModel
 import com.tecsup.productos.ui.components.Cargando
 import com.tecsup.productos.ui.components.DialogoCerrarSesion
+import com.tecsup.productos.ui.components.SolicitarPermisoNotificaciones
 import com.tecsup.productos.ui.detalle.DetalleScreen
 import com.tecsup.productos.ui.detalle.DetalleViewModel
 import com.tecsup.productos.ui.favoritos.FavoritosScreen
@@ -48,6 +49,8 @@ fun AppNav(
         factory = SesionViewModel.factory(container)
     )
     val estadoSesion by sesionViewModel.estado.collectAsStateWithLifecycle()
+
+    SolicitarPermisoNotificaciones()
 
     when (val estado = estadoSesion) {
         is UiState.Exito -> NavegacionPrincipal(
