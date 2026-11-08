@@ -9,12 +9,12 @@ import com.tecsup.productos.AppContainer
 import com.tecsup.productos.data.repository.ItemRepository
 import com.tecsup.productos.domain.model.Item
 import com.tecsup.productos.ui.UiState
+import com.tecsup.productos.ui.aMensajeUsuario
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import retrofit2.HttpException
-import java.io.IOException
 
 class ListaViewModel(
     private val repo: ItemRepository
@@ -50,19 +50,22 @@ class ListaViewModel(
                     _aviso.value = null
                 }
                 .onFailure { e ->
-                    _estado.value = UiState.Error(mensajeDe(e))
+                    if (repo.cantidadGuardada() == 0) {
+                        // Sin internet y sin nada guardado -> error con Reintentar (PA-09)
+                        _estado.value = UiState.Error(e.aMensajeUsuario())
+                    } else {
+                        // Sin internet pero con datos guardados -> lista + aviso (PA-08)
+                        if (_estado.value !is UiState.Exito) {
+                            _estado.value = UiState.Exito(repo.items.first())
+                        }
+                        _aviso.value = "Sin conexión: mostrando datos guardados"
+                    }
                 }
         }
     }
 
     fun alternarFavorito(id: Int) {
         viewModelScope.launch { repo.alternarFavorito(id) }
-    }
-
-    private fun mensajeDe(e: Throwable): String = when (e) {
-        is IOException -> "No hay conexión a internet"
-        is HttpException -> "El servidor respondió con error ${e.code()}"
-        else -> "Ocurrió un error inesperado"
     }
 
     companion object {
