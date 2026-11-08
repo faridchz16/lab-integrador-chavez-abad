@@ -9,6 +9,8 @@ import com.tecsup.productos.data.remote.ApiService
 import com.tecsup.productos.data.remote.RetrofitClient
 import com.tecsup.productos.data.repository.ItemRepository
 import com.tecsup.productos.data.repository.ItemRepositoryImpl
+import com.tecsup.productos.notification.Notificador
+import com.tecsup.productos.notification.NotificadorAndroid
 
 class AppContainer(private val context: Context) {
 
@@ -26,5 +28,9 @@ class AppContainer(private val context: Context) {
 
     val itemRepository: ItemRepository by lazy {
         ItemRepositoryImpl(api, database.itemDao())
+    }
+
+    val notificador: Notificador by lazy {
+        NotificadorAndroid(context)
     }
 }

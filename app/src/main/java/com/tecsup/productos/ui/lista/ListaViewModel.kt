@@ -8,6 +8,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.tecsup.productos.AppContainer
 import com.tecsup.productos.data.repository.ItemRepository
 import com.tecsup.productos.domain.model.Item
+import com.tecsup.productos.notification.Notificador
 import com.tecsup.productos.ui.UiState
 import com.tecsup.productos.ui.aMensajeUsuario
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,7 +18,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class ListaViewModel(
-    private val repo: ItemRepository
+    private val repo: ItemRepository,
+    private val notificador: Notificador
 ) : ViewModel() {
 
     private val _estado = MutableStateFlow<UiState<List<Item>>>(UiState.Cargando)
@@ -45,16 +47,18 @@ class ListaViewModel(
             val resultado = repo.refrescar()
             refrescoTerminado = true
             resultado
-                .onSuccess {
+                .onSuccess { n ->
                     if (_estado.value is UiState.Cargando) _estado.value = UiState.Exito(emptyList())
                     _aviso.value = null
+
+                    notificador.mostrar("Datos actualizados", "Se guardaron $n elementos")
                 }
                 .onFailure { e ->
                     if (repo.cantidadGuardada() == 0) {
-                        // Sin internet y sin nada guardado -> error con Reintentar (PA-09)
+
                         _estado.value = UiState.Error(e.aMensajeUsuario())
                     } else {
-                        // Sin internet pero con datos guardados -> lista + aviso (PA-08)
+
                         if (_estado.value !is UiState.Exito) {
                             _estado.value = UiState.Exito(repo.items.first())
                         }
@@ -70,7 +74,7 @@ class ListaViewModel(
 
     companion object {
         fun factory(container: AppContainer): ViewModelProvider.Factory = viewModelFactory {
-            initializer { ListaViewModel(container.itemRepository) }
+            initializer { ListaViewModel(container.itemRepository, container.notificador) }
         }
     }
 }
