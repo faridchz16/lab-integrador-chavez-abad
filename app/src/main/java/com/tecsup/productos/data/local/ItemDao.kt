@@ -8,10 +8,10 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ItemDao {
 
-    @Query("SELECT * FROM items ORDER BY titulo")
+    @Query("SELECT * FROM items ORDER BY titulo COLLATE NOCASE")
     fun todos(): Flow<List<ItemEntity>>
 
-    @Query("SELECT * FROM items WHERE esFavorito = 1 ORDER BY titulo")
+    @Query("SELECT * FROM items WHERE esFavorito = 1 ORDER BY titulo COLLATE NOCASE")
     fun favoritos(): Flow<List<ItemEntity>>
 
     @Query("SELECT id FROM items WHERE esFavorito = 1")
