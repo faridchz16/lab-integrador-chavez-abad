@@ -7,26 +7,63 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.tecsup.productos.AppContainer
 import com.tecsup.productos.R
+import com.tecsup.productos.data.categorias.CategoriaRepository
+import com.tecsup.productos.data.preferencias.PreferenciasRepository
 import com.tecsup.productos.data.recursos.ProveedorTextos
 import com.tecsup.productos.data.repository.ItemRepository
+import com.tecsup.productos.domain.catalogo.FiltroCatalogo
+import com.tecsup.productos.domain.model.Categoria
 import com.tecsup.productos.domain.model.Item
+import com.tecsup.productos.domain.model.precioFinal
 import com.tecsup.productos.notification.Notificador
 import com.tecsup.productos.ui.UiState
 import com.tecsup.productos.ui.aMensajeUsuario
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.math.ceil
+import kotlin.math.floor
 
 class ListaViewModel(
     private val repo: ItemRepository,
+    categoriaRepository: CategoriaRepository,
+    private val preferencias: PreferenciasRepository,
     private val notificador: Notificador,
     private val textos: ProveedorTextos
 ) : ViewModel() {
 
-    private val _estado = MutableStateFlow<UiState<List<Item>>>(UiState.Cargando)
-    val estado: StateFlow<UiState<List<Item>>> = _estado.asStateFlow()
+    private val _estadoBase = MutableStateFlow<UiState<List<Item>>>(UiState.Cargando)
+
+    private val _filtro = MutableStateFlow(FiltroCatalogo())
+    val filtro: StateFlow<FiltroCatalogo> = _filtro.asStateFlow()
+
+    val estado: StateFlow<UiState<List<Item>>> =
+        combine(_estadoBase, _filtro) { base, filtro ->
+            if (base is UiState.Exito) UiState.Exito(filtro.aplicarA(base.datos)) else base
+        }.stateIn(viewModelScope, SharingStarted.Eagerly, UiState.Cargando)
+
+    val rangoPrecios: StateFlow<ClosedFloatingPointRange<Double>?> = _estadoBase
+        .map { base ->
+            val precios = (base as? UiState.Exito)?.datos?.map { it.precioFinal() }.orEmpty()
+            if (precios.isEmpty()) null else floor(precios.min())..ceil(precios.max())
+        }
+        .stateIn(viewModelScope, SharingStarted.Eagerly, null)
+
+    val categorias: StateFlow<List<Categoria>> = categoriaRepository.categorias
+        .catch { emit(emptyList()) }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(TIEMPO_ESPERA_MS), emptyList())
+
+    val historial: StateFlow<List<String>> = preferencias.historialBusqueda
+        .catch { emit(emptyList()) }
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(TIEMPO_ESPERA_MS), emptyList())
 
     private val _aviso = MutableStateFlow<String?>(null)
     val aviso: StateFlow<String?> = _aviso.asStateFlow()
@@ -37,7 +74,7 @@ class ListaViewModel(
         viewModelScope.launch {
             repo.items.collect { lista ->
                 if (lista.isNotEmpty() || refrescoTerminado) {
-                    _estado.value = UiState.Exito(lista)
+                    _estadoBase.value = UiState.Exito(lista)
                 }
             }
         }
@@ -46,12 +83,14 @@ class ListaViewModel(
 
     fun refrescar() {
         viewModelScope.launch {
-            if (_estado.value is UiState.Error) _estado.value = UiState.Cargando
+            if (_estadoBase.value is UiState.Error) _estadoBase.value = UiState.Cargando
             val resultado = repo.refrescar()
             refrescoTerminado = true
             resultado
                 .onSuccess { n ->
-                    if (_estado.value is UiState.Cargando) _estado.value = UiState.Exito(emptyList())
+                    if (_estadoBase.value is UiState.Cargando) {
+                        _estadoBase.value = UiState.Exito(emptyList())
+                    }
                     _aviso.value = null
                     notificador.mostrar(
                         textos.texto(R.string.notificacion_titulo),
@@ -60,10 +99,10 @@ class ListaViewModel(
                 }
                 .onFailure { e ->
                     if (repo.cantidadGuardada() == 0) {
-                        _estado.value = UiState.Error(e.aMensajeUsuario(textos))
+                        _estadoBase.value = UiState.Error(e.aMensajeUsuario(textos))
                     } else {
-                        if (_estado.value !is UiState.Exito) {
-                            _estado.value = UiState.Exito(repo.items.first())
+                        if (_estadoBase.value !is UiState.Exito) {
+                            _estadoBase.value = UiState.Exito(repo.items.first())
                         }
                         _aviso.value = textos.texto(R.string.lista_aviso_sin_conexion)
                     }
@@ -75,10 +114,60 @@ class ListaViewModel(
         viewModelScope.launch { repo.alternarFavorito(id) }
     }
 
+    fun cambiarConsulta(consulta: String) {
+        _filtro.update { it.copy(consulta = consulta) }
+    }
+
+    fun confirmarBusqueda(consulta: String) {
+        cambiarConsulta(consulta)
+        viewModelScope.launch { preferencias.agregarBusqueda(consulta) }
+    }
+
+    fun limpiarConsulta() = cambiarConsulta("")
+
+    fun eliminarDelHistorial(consulta: String) {
+        viewModelScope.launch { preferencias.eliminarBusqueda(consulta) }
+    }
+
+    fun limpiarHistorial() {
+        viewModelScope.launch { preferencias.limpiarHistorial() }
+    }
+
+    fun seleccionarCategoria(id: Long?) {
+        _filtro.update { actual ->
+            val nuevas = if (id == null || actual.categorias == setOf(id)) emptySet() else setOf(id)
+            actual.copy(categorias = nuevas)
+        }
+    }
+
+    fun mostrarCategoria(id: Long) {
+        _filtro.update { it.copy(categorias = setOf(id)) }
+    }
+
+    fun aplicarFiltros(nuevo: FiltroCatalogo) {
+        _filtro.update { actual -> nuevo.copy(consulta = actual.consulta) }
+    }
+
+    fun limpiarFiltros() {
+        _filtro.update { it.sinFiltros() }
+    }
+
+    fun limpiarTodo() {
+        _filtro.value = FiltroCatalogo()
+    }
+
     companion object {
+        private const val TIEMPO_ESPERA_MS = 5_000L
+
         fun factory(container: AppContainer): ViewModelProvider.Factory = viewModelFactory {
             initializer {
-                ListaViewModel(container.itemRepository, container.notificador, container.textos)
+                ListaViewModel(
+                    repo = container.itemRepository,
+                    categoriaRepository = container.categoriaRepository,
+                    preferencias = container.preferenciasRepository,
+                    notificador = container.notificador,
+                    textos = container.textos
+                )
             }
         }
     }

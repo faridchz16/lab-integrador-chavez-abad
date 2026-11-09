@@ -1,50 +1,81 @@
 package com.tecsup.productos.data.repository
 
+import com.tecsup.productos.data.local.CategoriaDao
+import com.tecsup.productos.data.local.CategoriaEntity
 import com.tecsup.productos.data.local.ItemDao
+import com.tecsup.productos.data.local.ItemEntity
 import com.tecsup.productos.data.mapper.aEntity
 import com.tecsup.productos.data.mapper.aModelo
+import com.tecsup.productos.data.mapper.fusionarCon
 import com.tecsup.productos.data.remote.ApiService
 import com.tecsup.productos.domain.model.Item
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 import retrofit2.HttpException
 import java.io.IOException
 
 class ItemRepositoryImpl(
     private val api: ApiService,
-    private val dao: ItemDao
+    private val dao: ItemDao,
+    private val categoriaDao: CategoriaDao,
+    private val nombreSinCategoria: String
 ) : ItemRepository {
 
     override val items: Flow<List<Item>> =
-        dao.todos().map { lista -> lista.map { it.aModelo() } }
+        combine(dao.todos(), categoriaDao.todas()) { entidades, categorias ->
+            entidades.conNombreCategoria(categorias)
+        }
 
     override val favoritos: Flow<List<Item>> =
-        dao.favoritos().map { lista -> lista.map { it.aModelo() } }
+        combine(dao.favoritos(), categoriaDao.todas()) { entidades, categorias ->
+            entidades.conNombreCategoria(categorias)
+        }
 
     override suspend fun refrescar(): Result<Int> = try {
-        val idsFavoritos = dao.idsFavoritos().toSet()
-        val nuevos = api.listar().products
-            .map { it.aEntity(esFavorito = it.id in idsFavoritos) }
-        dao.guardarTodos(nuevos)
-        Result.success(nuevos.size)
+        val existentes = dao.todosUnaVez().associateBy { it.id }
+        val actualizados = api.listar().products.map { dto ->
+            val previo = existentes[dto.id]
+            val categoriaId = previo?.categoriaId ?: obtenerOCrearCategoria(dto.brand)
+            previo?.fusionarCon(dto, categoriaId) ?: dto.aEntity(categoriaId)
+        }
+        dao.guardarTodos(actualizados)
+        Result.success(actualizados.size)
     } catch (e: IOException) {
         Result.failure(e)
     } catch (e: HttpException) {
         Result.failure(e)
     }
 
-    override suspend fun obtenerDetalle(id: Int): Result<Item> = try {
-        val esFavorito = dao.esFavorito(id) ?: false
-        Result.success(api.detalle(id).aModelo(esFavorito))
-    } catch (e: IOException) {
-        val guardado = dao.porId(id)
-        if (guardado != null) Result.success(guardado.aModelo()) else Result.failure(e)
-    } catch (e: HttpException) {
-        Result.failure(e)
+    override suspend fun obtenerDetalle(id: Int): Result<Item> {
+        val guardado = dao.porId(id)?.let { entidad ->
+            entidad.aModelo(entidad.categoriaId?.let { categoriaDao.porId(it)?.nombre })
+        }
+        return try {
+            val dto = api.detalle(id)
+            Result.success(guardado?.let { dto.aModelo(it) } ?: dto.aModelo())
+        } catch (e: IOException) {
+            if (guardado != null) Result.success(guardado) else Result.failure(e)
+        } catch (e: HttpException) {
+            if (guardado != null) Result.success(guardado) else Result.failure(e)
+        }
     }
 
     override suspend fun alternarFavorito(id: Int) = dao.alternarFavorito(id)
     override suspend fun cantidadGuardada(): Int = dao.contar()
     override suspend fun cantidadFavoritos(): Int = dao.contarFavoritos()
     override suspend fun limpiarCache() = dao.borrarTodo()
+
+    private suspend fun obtenerOCrearCategoria(marca: String?): Long? {
+        val nombre = marca?.trim()?.takeIf { it.isNotEmpty() } ?: nombreSinCategoria
+        categoriaDao.porNombre(nombre)?.let { return it.id }
+        val nuevoId = categoriaDao.insertar(CategoriaEntity(nombre = nombre))
+        return if (nuevoId > 0) nuevoId else categoriaDao.porNombre(nombre)?.id
+    }
+
+    private fun List<ItemEntity>.conNombreCategoria(
+        categorias: List<CategoriaEntity>
+    ): List<Item> {
+        val nombres = categorias.associate { it.id to it.nombre }
+        return map { it.aModelo(nombres[it.categoriaId]) }
+    }
 }

@@ -44,6 +44,7 @@ import com.tecsup.productos.ui.components.EtiquetasProducto
 import com.tecsup.productos.ui.components.claveImagenProducto
 import com.tecsup.productos.ui.components.elementoCompartido
 import com.tecsup.productos.ui.components.ImagenProducto
+import com.tecsup.productos.ui.components.PildoraCategoria
 import com.tecsup.productos.ui.components.PrecioProducto
 import com.tecsup.productos.ui.lista.ProductosDePrueba
 import com.tecsup.productos.ui.theme.ProductosTheme
@@ -112,6 +113,10 @@ private fun ContenidoDetalle(item: Item) {
     ) {
         GaleriaImagenes(item = item)
         Column(modifier = Modifier.padding(16.dp)) {
+            item.categoria?.let { categoria ->
+                PildoraCategoria(texto = categoria)
+                Spacer(modifier = Modifier.height(8.dp))
+            }
             Text(
                 text = item.marca.ifBlank { stringResource(R.string.producto_sin_marca) },
                 style = MaterialTheme.typography.labelLarge,

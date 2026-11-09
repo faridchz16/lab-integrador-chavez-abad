@@ -12,6 +12,7 @@ import com.tecsup.productos.data.repository.ItemRepository
 import com.tecsup.productos.domain.model.EstadoStock
 import com.tecsup.productos.domain.model.Item
 import com.tecsup.productos.domain.model.estadoStock
+import com.tecsup.productos.domain.model.tieneStockBajo
 import com.tecsup.productos.notification.Notificador
 import com.tecsup.productos.ui.UiState
 import com.tecsup.productos.ui.aMensajeUsuario
@@ -100,7 +101,7 @@ class AdminViewModel(
     private fun List<Item>.aResumen() = ResumenAdmin(
         totalGuardado = size,
         totalFavoritos = count { it.esFavorito },
-        stockBajo = count { it.estadoStock() == EstadoStock.STOCK_BAJO },
+        stockBajo = count { it.tieneStockBajo() },
         agotados = count { it.estadoStock() == EstadoStock.AGOTADO }
     )
 

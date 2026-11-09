@@ -26,15 +26,25 @@ fun EtiquetaStock(
             colores.correcto.contenedor,
             colores.correcto.contenido
         )
-        EstadoStock.STOCK_BAJO -> Triple(
+        EstadoStock.CERCA_MINIMO -> Triple(
             stringResource(R.string.stock_bajo, stock ?: 0),
             colores.cercaMinimo.contenedor,
             colores.cercaMinimo.contenido
+        )
+        EstadoStock.BAJO_MINIMO -> Triple(
+            stringResource(R.string.stock_bajo_minimo, stock ?: 0),
+            colores.critico.contenedor,
+            colores.critico.contenido
         )
         EstadoStock.AGOTADO -> Triple(
             stringResource(R.string.stock_agotado),
             colores.critico.contenedor,
             colores.critico.contenido
+        )
+        EstadoStock.SOBRE_MAXIMO -> Triple(
+            stringResource(R.string.stock_sobre_maximo, stock ?: 0),
+            colores.sobreMaximo.contenedor,
+            colores.sobreMaximo.contenido
         )
         EstadoStock.SIN_DATO -> return
     }

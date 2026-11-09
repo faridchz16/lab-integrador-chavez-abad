@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="categorias_titulo">Categorías</string>
+    <string name="categorias_vacio_titulo">Aún no hay categorías</string>
+    <string name="categorias_vacio_mensaje">Las categorías se crean automáticamente al sincronizar el catálogo.</string>
+    <string name="categorias_ver">Ver productos de %1$s</string>
+    <plurals name="categorias_productos">
+        <item quantity="one">%1$d producto</item>
+        <item quantity="many">%1$d productos</item>
+        <item quantity="other">%1$d productos</item>
+    </plurals>
+</resources>

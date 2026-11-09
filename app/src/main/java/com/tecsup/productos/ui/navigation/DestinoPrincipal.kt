@@ -17,6 +17,12 @@ enum class DestinoPrincipal(
         iconoActivo = R.drawable.ic_catalogo,
         iconoInactivo = R.drawable.ic_catalogo_borde
     ),
+    CATEGORIAS(
+        ruta = Rutas.Categorias,
+        etiqueta = R.string.navegacion_categorias,
+        iconoActivo = R.drawable.ic_categoria,
+        iconoInactivo = R.drawable.ic_categoria_borde
+    ),
     FAVORITOS(
         ruta = Rutas.Favoritos,
         etiqueta = R.string.navegacion_favoritos,

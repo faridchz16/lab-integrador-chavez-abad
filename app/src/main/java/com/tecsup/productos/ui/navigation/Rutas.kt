@@ -13,6 +13,9 @@ sealed interface Rutas {
     data class Detalle(val id: Int, val imagen: String? = null) : Rutas
 
     @Serializable
+    data object Categorias : Rutas
+
+    @Serializable
     data object Favoritos : Rutas
 
     @Serializable

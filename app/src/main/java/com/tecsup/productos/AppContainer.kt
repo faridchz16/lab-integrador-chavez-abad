@@ -4,7 +4,10 @@ import android.content.Context
 import androidx.room.Room
 import com.tecsup.productos.data.auth.AuthRepository
 import com.tecsup.productos.data.auth.FirebaseAuthRepository
+import com.tecsup.productos.data.categorias.CategoriaRepository
+import com.tecsup.productos.data.categorias.RoomCategoriaRepository
 import com.tecsup.productos.data.local.AppDatabase
+import com.tecsup.productos.data.local.MIGRACION_2_3
 import com.tecsup.productos.data.preferencias.DataStorePreferenciasRepository
 import com.tecsup.productos.data.preferencias.PreferenciasRepository
 import com.tecsup.productos.data.recursos.ProveedorTextos
@@ -26,12 +29,22 @@ class AppContainer(private val context: Context) {
 
     private val database: AppDatabase by lazy {
         Room.databaseBuilder(context, AppDatabase::class.java, "productos.db")
+            .addMigrations(MIGRACION_2_3)
             .fallbackToDestructiveMigration(dropAllTables = true)
             .build()
     }
 
     val itemRepository: ItemRepository by lazy {
-        ItemRepositoryImpl(api, database.itemDao())
+        ItemRepositoryImpl(
+            api = api,
+            dao = database.itemDao(),
+            categoriaDao = database.categoriaDao(),
+            nombreSinCategoria = context.getString(R.string.categoria_sin_nombre)
+        )
+    }
+
+    val categoriaRepository: CategoriaRepository by lazy {
+        RoomCategoriaRepository(database.categoriaDao())
     }
 
     val notificador: Notificador by lazy {

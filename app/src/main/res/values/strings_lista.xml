@@ -9,6 +9,8 @@
     <string name="stock_disponible">Disponible · %1$d</string>
     <string name="stock_bajo">Quedan %1$d</string>
     <string name="stock_agotado">Agotado</string>
+    <string name="stock_bajo_minimo">Bajo mínimo · %1$d</string>
+    <string name="stock_sobre_maximo">Sobre máximo · %1$d</string>
     <string name="favorito_agregar">Agregar a favoritos</string>
     <string name="favorito_quitar">Quitar de favoritos</string>
 </resources>

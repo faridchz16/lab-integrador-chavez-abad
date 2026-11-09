@@ -27,6 +27,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavBackStackEntry
@@ -48,6 +49,8 @@ import com.tecsup.productos.ui.admin.AdminScreen
 import com.tecsup.productos.ui.admin.AdminViewModel
 import com.tecsup.productos.ui.ajustes.AjustesScreen
 import com.tecsup.productos.ui.ajustes.AjustesViewModel
+import com.tecsup.productos.ui.categorias.CategoriasScreen
+import com.tecsup.productos.ui.categorias.CategoriasViewModel
 import com.tecsup.productos.ui.components.DialogoCerrarSesion
 import com.tecsup.productos.ui.components.LocalAlcanceAnimacionVisible
 import com.tecsup.productos.ui.components.LocalAlcanceTransicionCompartida
@@ -57,6 +60,7 @@ import com.tecsup.productos.ui.detalle.DetalleScreen
 import com.tecsup.productos.ui.detalle.DetalleViewModel
 import com.tecsup.productos.ui.favoritos.FavoritosScreen
 import com.tecsup.productos.ui.favoritos.FavoritosViewModel
+import com.tecsup.productos.ui.lista.AccionesCatalogo
 import com.tecsup.productos.ui.lista.ListaScreen
 import com.tecsup.productos.ui.lista.ListaViewModel
 import com.tecsup.productos.ui.login.LoginScreen
@@ -180,14 +184,58 @@ private fun NavegacionPrincipal(
                         )
                         val estado by viewModel.estado.collectAsStateWithLifecycle()
                         val aviso by viewModel.aviso.collectAsStateWithLifecycle()
+                        val filtro by viewModel.filtro.collectAsStateWithLifecycle()
+                        val categorias by viewModel.categorias.collectAsStateWithLifecycle()
+                        val historial by viewModel.historial.collectAsStateWithLifecycle()
+                        val rangoPrecios by viewModel.rangoPrecios.collectAsStateWithLifecycle()
+                        val acciones = remember(viewModel) {
+                            AccionesCatalogo(
+                                onReintentar = viewModel::refrescar,
+                                onProductoClick = { item ->
+                                    navController.navigate(Rutas.Detalle(item.id, item.imagenUrl))
+                                },
+                                onAlternarFavorito = viewModel::alternarFavorito,
+                                onConsultaChange = viewModel::cambiarConsulta,
+                                onBuscar = viewModel::confirmarBusqueda,
+                                onEliminarHistorial = viewModel::eliminarDelHistorial,
+                                onLimpiarHistorial = viewModel::limpiarHistorial,
+                                onSeleccionarCategoria = viewModel::seleccionarCategoria,
+                                onAplicarFiltros = viewModel::aplicarFiltros,
+                                onLimpiarFiltros = viewModel::limpiarFiltros,
+                                onLimpiarConsulta = viewModel::limpiarConsulta,
+                                onLimpiarTodo = viewModel::limpiarTodo
+                            )
+                        }
                         ListaScreen(
                             estado = estado,
                             aviso = aviso,
-                            onReintentar = viewModel::refrescar,
-                            onProductoClick = { item ->
-                                navController.navigate(Rutas.Detalle(item.id, item.imagenUrl))
-                            },
-                            onAlternarFavorito = viewModel::alternarFavorito
+                            filtro = filtro,
+                            categorias = categorias,
+                            historial = historial,
+                            rangoPrecios = rangoPrecios,
+                            acciones = acciones
+                        )
+                    }
+                    pantalla<Rutas.Categorias> {
+                        val viewModel: CategoriasViewModel = viewModel(
+                            factory = CategoriasViewModel.factory(container)
+                        )
+                        val estado by viewModel.estado.collectAsStateWithLifecycle()
+                        CategoriasScreen(
+                            estado = estado,
+                            onReintentar = viewModel::recargar,
+                            onCategoriaClick = { categoria ->
+                                val entradaLista = runCatching {
+                                    navController.getBackStackEntry<Rutas.Lista>()
+                                }.getOrNull()
+                                if (entradaLista != null) {
+                                    ViewModelProvider.create(
+                                        owner = entradaLista,
+                                        factory = ListaViewModel.factory(container)
+                                    )[ListaViewModel::class].mostrarCategoria(categoria.id)
+                                }
+                                navController.irAPestana(DestinoPrincipal.CATALOGO)
+                            }
                         )
                     }
                     pantalla<Rutas.Detalle> { entrada ->

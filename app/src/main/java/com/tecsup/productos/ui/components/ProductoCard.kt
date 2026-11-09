@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -54,19 +55,34 @@ fun ProductoCard(
             )
             Spacer(modifier = Modifier.width(12.dp))
             Column(modifier = Modifier.weight(1f)) {
+                item.categoria?.let { categoria ->
+                    PildoraCategoria(texto = categoria)
+                    Spacer(modifier = Modifier.height(4.dp))
+                }
                 Text(
                     text = item.titulo,
                     style = MaterialTheme.typography.titleMedium,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
-                Text(
-                    text = item.marca.ifBlank { stringResource(R.string.producto_sin_marca) },
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+                if (item.marca.isNotBlank() && !item.marca.equals(item.categoria, ignoreCase = true)) {
+                    Text(
+                        text = item.marca,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+                item.descripcion?.takeIf { it.isNotBlank() }?.let { descripcion ->
+                    Text(
+                        text = descripcion,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
                 Spacer(modifier = Modifier.height(4.dp))
                 PrecioProducto(item = item)
                 Spacer(modifier = Modifier.height(6.dp))
@@ -74,6 +90,24 @@ fun ProductoCard(
             }
             BotonFavorito(esFavorito = item.esFavorito, onClick = onAlternarFavorito)
         }
+    }
+}
+
+@Composable
+fun PildoraCategoria(texto: String, modifier: Modifier = Modifier) {
+    Surface(
+        color = MaterialTheme.colorScheme.secondaryContainer,
+        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+        shape = MaterialTheme.shapes.small,
+        modifier = modifier
+    ) {
+        Text(
+            text = texto,
+            style = MaterialTheme.typography.labelSmall,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+        )
     }
 }
 
@@ -86,6 +120,8 @@ private fun ProductoCardPreview() {
                 id = 1,
                 titulo = "iPhone 13 Pro",
                 marca = "Apple",
+                categoria = "Smartphones",
+                descripcion = "Pantalla Super Retina XDR y chip A15 Bionic.",
                 precio = 1099.99,
                 imagenUrl = null,
                 rating = 4.6,

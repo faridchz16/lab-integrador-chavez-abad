@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="catalogo_todas">Todas</string>
+    <string name="catalogo_buscar">Buscar productos</string>
+    <string name="catalogo_filtrar">Filtrar y ordenar</string>
+    <plurals name="catalogo_filtros_activos">
+        <item quantity="one">Filtrar y ordenar, %1$d filtro activo</item>
+        <item quantity="many">Filtrar y ordenar, %1$d filtros activos</item>
+        <item quantity="other">Filtrar y ordenar, %1$d filtros activos</item>
+    </plurals>
+    <string name="categoria_sin_nombre">Sin categoría</string>
+
+    <string name="busqueda_sugerencia">Busca por nombre, marca o categoría</string>
+    <string name="busqueda_limpiar">Borrar texto</string>
+    <string name="busqueda_cerrar">Cerrar búsqueda</string>
+    <string name="busqueda_recientes">Búsquedas recientes</string>
+    <string name="busqueda_borrar_historial">Borrar todo</string>
+    <string name="busqueda_eliminar">Eliminar «%1$s» del historial</string>
+    <string name="busqueda_sin_historial">Aquí aparecerán tus búsquedas recientes.</string>
+    <string name="busqueda_activa">Búsqueda: %1$s</string>
+    <string name="busqueda_quitar">Quitar búsqueda</string>
+
+    <string name="sin_resultados_titulo">Sin resultados</string>
+    <string name="sin_resultados_mensaje">No encontramos productos con esos criterios. Prueba con otra búsqueda o quita algunos filtros.</string>
+    <string name="sin_resultados_busqueda">No encontramos productos para «%1$s».</string>
+    <string name="sin_resultados_accion">Limpiar búsqueda y filtros</string>
+
+    <string name="filtros_titulo">Filtros y orden</string>
+    <string name="filtros_categorias">Categorías</string>
+    <string name="filtros_sin_categorias">Todavía no hay categorías. Sincroniza el catálogo para crearlas.</string>
+    <string name="filtros_precio">Rango de precio</string>
+    <string name="filtros_rango">%1$s – %2$s</string>
+    <string name="filtros_estado_stock">Estado del stock</string>
+    <string name="filtros_stock_disponible">Disponible</string>
+    <string name="filtros_stock_bajo">Stock bajo</string>
+    <string name="filtros_stock_agotado">Agotado</string>
+    <string name="filtros_ordenar">Ordenar por</string>
+    <string name="filtros_aplicar">Aplicar</string>
+    <string name="filtros_limpiar">Limpiar filtros</string>
+    <string name="orden_nombre_asc">Nombre (A–Z)</string>
+    <string name="orden_nombre_desc">Nombre (Z–A)</string>
+    <string name="orden_precio_asc">Precio: menor a mayor</string>
+    <string name="orden_precio_desc">Precio: mayor a menor</string>
+    <string name="orden_stock_asc">Stock: menor a mayor</string>
+    <string name="orden_stock_desc">Stock: mayor a menor</string>
+</resources>
