@@ -11,6 +11,7 @@ import com.tecsup.productos.data.remote.ApiService
 import com.tecsup.productos.domain.model.Item
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.serialization.SerializationException
 import retrofit2.HttpException
 import java.io.IOException
 
@@ -43,6 +44,8 @@ class ItemRepositoryImpl(
         Result.failure(e)
     } catch (e: HttpException) {
         Result.failure(e)
+    } catch (e: SerializationException) {
+        Result.failure(e)
     }
 
     override suspend fun obtenerDetalle(id: Int): Result<Item> {
@@ -59,6 +62,8 @@ class ItemRepositoryImpl(
         } catch (e: IOException) {
             if (guardado != null) Result.success(guardado) else Result.failure(e)
         } catch (e: HttpException) {
+            if (guardado != null) Result.success(guardado) else Result.failure(e)
+        } catch (e: SerializationException) {
             if (guardado != null) Result.success(guardado) else Result.failure(e)
         }
     }
