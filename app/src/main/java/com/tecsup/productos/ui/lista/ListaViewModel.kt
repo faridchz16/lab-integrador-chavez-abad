@@ -68,6 +68,9 @@ class ListaViewModel(
     private val _aviso = MutableStateFlow<String?>(null)
     val aviso: StateFlow<String?> = _aviso.asStateFlow()
 
+    private val _refrescando = MutableStateFlow(false)
+    val refrescando: StateFlow<Boolean> = _refrescando.asStateFlow()
+
     private var refrescoTerminado = false
 
     init {
@@ -83,30 +86,37 @@ class ListaViewModel(
 
     fun refrescar() {
         viewModelScope.launch {
-            if (_estadoBase.value is UiState.Error) _estadoBase.value = UiState.Cargando
-            val resultado = repo.refrescar()
-            refrescoTerminado = true
-            resultado
-                .onSuccess { n ->
-                    if (_estadoBase.value is UiState.Cargando) {
-                        _estadoBase.value = UiState.Exito(emptyList())
-                    }
-                    _aviso.value = null
-                    notificador.mostrar(
-                        textos.texto(R.string.notificacion_titulo),
-                        textos.plural(R.plurals.notificacion_guardados, n, n)
-                    )
-                }
-                .onFailure { e ->
-                    if (repo.cantidadGuardada() == 0) {
-                        _estadoBase.value = UiState.Error(e.aMensajeUsuario(textos))
-                    } else {
-                        if (_estadoBase.value !is UiState.Exito) {
-                            _estadoBase.value = UiState.Exito(repo.items.first())
+            if (_estadoBase.value is UiState.Exito) {
+                _refrescando.value = true
+            }
+            try {
+                if (_estadoBase.value is UiState.Error) _estadoBase.value = UiState.Cargando
+                val resultado = repo.refrescar()
+                refrescoTerminado = true
+                resultado
+                    .onSuccess { n ->
+                        if (_estadoBase.value is UiState.Cargando) {
+                            _estadoBase.value = UiState.Exito(emptyList())
                         }
-                        _aviso.value = textos.texto(R.string.lista_aviso_sin_conexion)
+                        _aviso.value = null
+                        notificador.mostrar(
+                            textos.texto(R.string.notificacion_titulo),
+                            textos.plural(R.plurals.notificacion_guardados, n, n)
+                        )
                     }
-                }
+                    .onFailure { e ->
+                        if (repo.cantidadGuardada() == 0) {
+                            _estadoBase.value = UiState.Error(e.aMensajeUsuario(textos))
+                        } else {
+                            if (_estadoBase.value !is UiState.Exito) {
+                                _estadoBase.value = UiState.Exito(repo.items.first())
+                            }
+                            _aviso.value = textos.texto(R.string.lista_aviso_sin_conexion)
+                        }
+                    }
+            } finally {
+                _refrescando.value = false
+            }
         }
     }
 

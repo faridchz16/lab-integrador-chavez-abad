@@ -238,6 +238,7 @@ private fun NavegacionPrincipal(
                         val categorias by viewModel.categorias.collectAsStateWithLifecycle()
                         val historial by viewModel.historial.collectAsStateWithLifecycle()
                         val rangoPrecios by viewModel.rangoPrecios.collectAsStateWithLifecycle()
+                        val refrescando by viewModel.refrescando.collectAsStateWithLifecycle()
                         val acciones = remember(viewModel, esAdmin) {
                             AccionesCatalogo(
                                 onReintentar = viewModel::refrescar,
@@ -273,7 +274,8 @@ private fun NavegacionPrincipal(
                             categorias = categorias,
                             historial = historial,
                             rangoPrecios = rangoPrecios,
-                            acciones = acciones
+                            acciones = acciones,
+                            refrescando = refrescando
                         )
                     }
                     pantalla<Rutas.Categorias> {
