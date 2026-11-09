@@ -61,8 +61,8 @@ import com.tecsup.productos.ui.theme.ProductosTheme
 data class AccionesCatalogo(
     val onReintentar: () -> Unit,
     val onProductoClick: (Item) -> Unit,
-    val onAlternarFavorito: (Int) -> Unit,
-    val onAgregarAlCarrito: (Item) -> Unit,
+    val onAlternarFavorito: ((Int) -> Unit)?,
+    val onAgregarAlCarrito: ((Item) -> Unit)?,
     val onConsultaChange: (String) -> Unit,
     val onBuscar: (String) -> Unit,
     val onEliminarHistorial: (String) -> Unit,
@@ -71,7 +71,8 @@ data class AccionesCatalogo(
     val onAplicarFiltros: (FiltroCatalogo) -> Unit,
     val onLimpiarFiltros: () -> Unit,
     val onLimpiarConsulta: () -> Unit,
-    val onLimpiarTodo: () -> Unit
+    val onLimpiarTodo: () -> Unit,
+    val onEditar: ((Item) -> Unit)? = null
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -162,7 +163,8 @@ fun ListaScreen(
                                     productos = actual.datos,
                                     onProductoClick = acciones.onProductoClick,
                                     onAlternarFavorito = acciones.onAlternarFavorito,
-                                    onAgregarAlCarrito = acciones.onAgregarAlCarrito
+                                    onAgregarAlCarrito = acciones.onAgregarAlCarrito,
+                                    onEditar = acciones.onEditar
                                 )
                                 filtro.tieneCriterios -> EstadoVacio(
                                     titulo = stringResource(R.string.sin_resultados_titulo),
@@ -264,8 +266,9 @@ private fun BotonFiltros(cantidadActivos: Int) {
 private fun ListaProductos(
     productos: List<Item>,
     onProductoClick: (Item) -> Unit,
-    onAlternarFavorito: (Int) -> Unit,
-    onAgregarAlCarrito: (Item) -> Unit
+    onAlternarFavorito: ((Int) -> Unit)?,
+    onAgregarAlCarrito: ((Item) -> Unit)?,
+    onEditar: ((Item) -> Unit)?
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -276,8 +279,9 @@ private fun ListaProductos(
             ProductoCard(
                 item = item,
                 onClick = { onProductoClick(item) },
-                onAlternarFavorito = { onAlternarFavorito(item.id) },
-                onAgregarAlCarrito = { onAgregarAlCarrito(item) },
+                onAlternarFavorito = onAlternarFavorito?.let { alternar -> { alternar(item.id) } },
+                onAgregarAlCarrito = onAgregarAlCarrito?.let { agregar -> { agregar(item) } },
+                onEditar = onEditar?.let { editar -> { editar(item) } },
                 modifier = Modifier.animateItem()
             )
         }

@@ -13,7 +13,7 @@ interface CategoriaDao {
         """
         SELECT c.id AS id, c.nombre AS nombre, COUNT(i.id) AS cantidad
         FROM categorias c
-        LEFT JOIN items i ON i.categoriaId = c.id
+        LEFT JOIN items i ON i.categoriaId = c.id AND i.eliminado = 0
         GROUP BY c.id
         ORDER BY c.nombre COLLATE NOCASE
         """
@@ -31,4 +31,10 @@ interface CategoriaDao {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertar(categoria: CategoriaEntity): Long
+
+    @Query("UPDATE categorias SET nombre = :nombre WHERE id = :id")
+    suspend fun renombrar(id: Long, nombre: String)
+
+    @Query("DELETE FROM categorias WHERE id = :id")
+    suspend fun eliminar(id: Long)
 }

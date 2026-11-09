@@ -7,12 +7,10 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.tecsup.productos.AppContainer
 import com.tecsup.productos.R
+import com.tecsup.productos.data.categorias.CategoriaRepository
+import com.tecsup.productos.data.pedidos.PedidoRepository
 import com.tecsup.productos.data.recursos.ProveedorTextos
 import com.tecsup.productos.data.repository.ItemRepository
-import com.tecsup.productos.domain.model.EstadoStock
-import com.tecsup.productos.domain.model.Item
-import com.tecsup.productos.domain.model.estadoStock
-import com.tecsup.productos.domain.model.tieneStockBajo
 import com.tecsup.productos.notification.Notificador
 import com.tecsup.productos.ui.UiState
 import com.tecsup.productos.ui.aMensajeUsuario
@@ -22,16 +20,9 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-
-data class ResumenAdmin(
-    val totalGuardado: Int,
-    val totalFavoritos: Int,
-    val stockBajo: Int,
-    val agotados: Int
-)
 
 sealed interface ResultadoAdmin {
     data class Sincronizado(val cantidad: Int) : ResultadoAdmin
@@ -41,12 +32,22 @@ sealed interface ResultadoAdmin {
 
 class AdminViewModel(
     private val repo: ItemRepository,
+    pedidoRepository: PedidoRepository,
+    categoriaRepository: CategoriaRepository,
     private val notificador: Notificador,
-    private val textos: ProveedorTextos
+    private val textos: ProveedorTextos,
+    private val reloj: () -> Long = System::currentTimeMillis
 ) : ViewModel() {
 
-    val estado: StateFlow<UiState<ResumenAdmin>> = repo.items
-        .map<List<Item>, UiState<ResumenAdmin>> { lista -> UiState.Exito(lista.aResumen()) }
+    val estado: StateFlow<UiState<PanelAdmin>> = combine(
+        repo.items,
+        pedidoRepository.pedidos,
+        categoriaRepository.categorias
+    ) { items, pedidos, categorias ->
+        val panel: UiState<PanelAdmin> =
+            UiState.Exito(construirPanel(items, pedidos, categorias.size, reloj()))
+        panel
+    }
         .catch { error -> emit(UiState.Error(error.aMensajeUsuario(textos))) }
         .stateIn(
             scope = viewModelScope,
@@ -98,19 +99,18 @@ class AdminViewModel(
         }
     }
 
-    private fun List<Item>.aResumen() = ResumenAdmin(
-        totalGuardado = size,
-        totalFavoritos = count { it.esFavorito },
-        stockBajo = count { it.tieneStockBajo() },
-        agotados = count { it.estadoStock() == EstadoStock.AGOTADO }
-    )
-
     companion object {
         private const val TIEMPO_ESPERA_MS = 5_000L
 
         fun factory(container: AppContainer): ViewModelProvider.Factory = viewModelFactory {
             initializer {
-                AdminViewModel(container.itemRepository, container.notificador, container.textos)
+                AdminViewModel(
+                    repo = container.itemRepository,
+                    pedidoRepository = container.pedidoRepository,
+                    categoriaRepository = container.categoriaRepository,
+                    notificador = container.notificador,
+                    textos = container.textos
+                )
             }
         }
     }

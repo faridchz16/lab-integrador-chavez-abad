@@ -9,7 +9,8 @@ enum class DestinoPrincipal(
     @StringRes val etiqueta: Int,
     @DrawableRes val iconoActivo: Int,
     @DrawableRes val iconoInactivo: Int,
-    val soloAdmin: Boolean = false
+    val soloAdmin: Boolean = false,
+    val soloCliente: Boolean = false
 ) {
     CATALOGO(
         ruta = Rutas.Lista,
@@ -27,7 +28,8 @@ enum class DestinoPrincipal(
         ruta = Rutas.Carrito,
         etiqueta = R.string.navegacion_carrito,
         iconoActivo = R.drawable.ic_carrito,
-        iconoInactivo = R.drawable.ic_carrito_borde
+        iconoInactivo = R.drawable.ic_carrito_borde,
+        soloCliente = true
     ),
     ADMIN(
         ruta = Rutas.Admin,

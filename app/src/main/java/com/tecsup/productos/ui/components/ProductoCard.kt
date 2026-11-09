@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -18,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -32,9 +35,10 @@ import com.tecsup.productos.ui.theme.ProductosTheme
 fun ProductoCard(
     item: Item,
     onClick: () -> Unit,
-    onAlternarFavorito: () -> Unit,
+    onAlternarFavorito: (() -> Unit)?,
     modifier: Modifier = Modifier,
-    onAgregarAlCarrito: (() -> Unit)? = null
+    onAgregarAlCarrito: (() -> Unit)? = null,
+    onEditar: (() -> Unit)? = null
 ) {
     val interaccion = remember { MutableInteractionSource() }
     ElevatedCard(
@@ -92,7 +96,18 @@ fun ProductoCard(
                 EtiquetasProducto(item = item)
             }
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                BotonFavorito(esFavorito = item.esFavorito, onClick = onAlternarFavorito)
+                if (onAlternarFavorito != null) {
+                    BotonFavorito(esFavorito = item.esFavorito, onClick = onAlternarFavorito)
+                }
+                if (onEditar != null) {
+                    IconButton(onClick = onEditar) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_editar),
+                            contentDescription = stringResource(R.string.producto_editar, item.titulo),
+                            tint = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
                 if (onAgregarAlCarrito != null) {
                     BotonAgregarCarrito(
                         onClick = onAgregarAlCarrito,

@@ -28,5 +28,14 @@ sealed interface Rutas {
     data object Admin : Rutas
 
     @Serializable
+    data object AdminProductos : Rutas
+
+    @Serializable
+    data class EditarProducto(val id: Int = 0) : Rutas
+
+    @Serializable
+    data object AdminCategorias : Rutas
+
+    @Serializable
     data object Ajustes : Rutas
 }

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="inventario_productos_titulo">Gestionar productos</string>
+    <string name="inventario_nuevo_producto">Nuevo producto</string>
+    <string name="inventario_buscar">Buscar por nombre, marca o categoría</string>
+    <string name="inventario_limpiar_busqueda">Limpiar búsqueda</string>
+    <string name="inventario_vacio_titulo">Aún no hay productos</string>
+    <string name="inventario_vacio_mensaje">Sincroniza desde el panel o crea tu primer producto.</string>
+    <string name="inventario_sin_resultados_titulo">Sin resultados</string>
+    <string name="inventario_sin_resultados_mensaje">No hay productos que coincidan con «%1$s».</string>
+    <string name="inventario_creado_local">Creado en la app</string>
+    <string name="inventario_editado_local">Editado en la app</string>
+    <string name="inventario_eliminar_producto">Eliminar %1$s</string>
+    <string name="inventario_deshacer">Deshacer</string>
+    <string name="inventario_producto_creado">«%1$s» se agregó al catálogo</string>
+    <string name="inventario_producto_actualizado">Se guardaron los cambios de «%1$s»</string>
+    <string name="inventario_producto_eliminado">«%1$s» se eliminó del catálogo</string>
+    <string name="inventario_producto_restaurado">El producto se restauró</string>
+    <string name="inventario_error_duplicado">Ya existe una categoría llamada «%1$s»</string>
+    <string name="inventario_error_no_encontrado">El elemento ya no existe. Actualiza la lista.</string>
+    <plurals name="inventario_conteo">
+        <item quantity="one">%1$d producto</item>
+        <item quantity="many">%1$d productos</item>
+        <item quantity="other">%1$d productos</item>
+    </plurals>
+
+    <string name="producto_form_titulo_nuevo">Nuevo producto</string>
+    <string name="producto_form_titulo_editar">Editar producto</string>
+    <string name="producto_form_vista_previa">Vista previa</string>
+    <string name="producto_form_sin_nombre">Producto sin nombre</string>
+    <string name="producto_form_seccion_informacion">Información</string>
+    <string name="producto_form_seccion_precio">Precio</string>
+    <string name="producto_form_seccion_inventario">Inventario</string>
+    <string name="producto_form_inventario_ayuda">Por debajo del mínimo el producto se marca en rojo y por encima del máximo en morado. Cada unidad pedida descuenta las unidades por pedido indicadas.</string>
+    <string name="producto_form_titulo">Nombre *</string>
+    <string name="producto_form_marca">Marca</string>
+    <string name="producto_form_categoria">Categoría</string>
+    <string name="producto_form_descripcion">Descripción</string>
+    <string name="producto_form_imagen">Dirección de la imagen</string>
+    <string name="producto_form_imagen_ayuda">Opcional. Pega un enlace que empiece con https://</string>
+    <string name="producto_form_precio">Precio *</string>
+    <string name="producto_form_prefijo_moneda">"S/ "</string>
+    <string name="producto_form_descuento">Descuento</string>
+    <string name="producto_form_sufijo_porcentaje" formatted="false">%</string>
+    <string name="producto_form_stock">Stock *</string>
+    <string name="producto_form_unidades">Unid. por pedido *</string>
+    <string name="producto_form_stock_minimo">Stock mínimo *</string>
+    <string name="producto_form_stock_maximo">Stock máximo *</string>
+    <string name="producto_form_contador">%1$d/%2$d</string>
+    <string name="producto_form_crear">Crear producto</string>
+    <string name="producto_form_guardar">Guardar cambios</string>
+    <string name="producto_form_revisar">Revisa los campos marcados en rojo</string>
+    <string name="producto_form_eliminar">Eliminar producto</string>
+    <string name="producto_form_eliminar_pregunta">¿Eliminar producto?</string>
+    <string name="producto_form_eliminar_mensaje">«%1$s» dejará de aparecer en el catálogo y se quitará de los carritos. Podrás deshacerlo justo después.</string>
+    <string name="producto_form_descartar_pregunta">¿Descartar cambios?</string>
+    <string name="producto_form_descartar_mensaje">Los cambios que hiciste en este producto no se guardarán.</string>
+    <string name="producto_form_descartar">Descartar</string>
+    <string name="producto_form_seguir_editando">Seguir editando</string>
+    <string name="producto_form_no_encontrado_titulo">Producto no disponible</string>
+    <string name="producto_form_no_encontrado_mensaje">Es posible que se haya eliminado o que se haya limpiado la caché.</string>
+
+    <string name="producto_error_obligatorio">Este campo es obligatorio</string>
+    <string name="producto_error_titulo_corto">Escribe al menos 3 caracteres</string>
+    <string name="producto_error_texto_largo">Máximo %1$d caracteres</string>
+    <string name="producto_error_numero">Ingresa un número válido</string>
+    <string name="producto_error_entero">Ingresa un número entero</string>
+    <string name="producto_error_precio">Debe ser mayor que 0 y hasta %1$d</string>
+    <string name="producto_error_descuento">Debe estar entre 0 y %1$d %%</string>
+    <string name="producto_error_negativo">No puede ser negativo</string>
+    <string name="producto_error_cantidad">El valor máximo es %1$d</string>
+    <string name="producto_error_maximo">Debe ser mayor que el stock mínimo</string>
+    <string name="producto_error_unidades">Debe ser al menos 1</string>
+    <string name="producto_error_url">Debe empezar con http:// o https://</string>
+
+    <string name="categorias_admin_titulo">Gestionar categorías</string>
+    <string name="categorias_admin_nueva">Nueva categoría</string>
+    <string name="categorias_admin_editar">Renombrar categoría</string>
+    <string name="categorias_admin_nombre">Nombre de la categoría</string>
+    <string name="categorias_admin_guardar">Guardar</string>
+    <string name="categorias_admin_renombrar">Renombrar %1$s</string>
+    <string name="categorias_admin_eliminar">Eliminar</string>
+    <string name="categorias_admin_eliminar_de">Eliminar %1$s</string>
+    <string name="categorias_admin_eliminar_pregunta">¿Eliminar «%1$s»?</string>
+    <plurals name="categorias_admin_eliminar_mensaje">
+        <item quantity="one">Su %1$d producto quedará sin categoría. Podrás deshacerlo justo después.</item>
+        <item quantity="many">Sus %1$d productos quedarán sin categoría. Podrás deshacerlo justo después.</item>
+        <item quantity="other">Sus %1$d productos quedarán sin categoría. Podrás deshacerlo justo después.</item>
+    </plurals>
+    <string name="categorias_admin_vacio_titulo">Aún no hay categorías</string>
+    <string name="categorias_admin_vacio_mensaje">Crea categorías para organizar el catálogo o sincroniza los productos.</string>
+    <string name="categorias_admin_creada">Se creó la categoría «%1$s»</string>
+    <string name="categorias_admin_renombrada">La categoría ahora se llama «%1$s»</string>
+    <string name="categorias_admin_eliminada">Se eliminó la categoría «%1$s»</string>
+    <string name="categorias_admin_restaurada">Se restauró la categoría «%1$s»</string>
+    <string name="categorias_admin_error_corto">Escribe al menos 2 caracteres</string>
+    <string name="categorias_admin_error_duplicado">Ya existe una categoría con ese nombre</string>
+</resources>

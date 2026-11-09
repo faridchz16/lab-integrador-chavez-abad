@@ -53,6 +53,14 @@ import com.tecsup.productos.domain.model.Sesion
 import com.tecsup.productos.ui.UiState
 import com.tecsup.productos.ui.admin.AdminScreen
 import com.tecsup.productos.ui.admin.AdminViewModel
+import com.tecsup.productos.ui.admin.ResultadoEdicion
+import com.tecsup.productos.ui.admin.TipoResultadoEdicion
+import com.tecsup.productos.ui.admin.categorias.AdminCategoriasScreen
+import com.tecsup.productos.ui.admin.categorias.AdminCategoriasViewModel
+import com.tecsup.productos.ui.admin.productos.AdminProductosScreen
+import com.tecsup.productos.ui.admin.productos.AdminProductosViewModel
+import com.tecsup.productos.ui.admin.productos.EditarProductoScreen
+import com.tecsup.productos.ui.admin.productos.EditarProductoViewModel
 import com.tecsup.productos.ui.ajustes.AjustesScreen
 import com.tecsup.productos.ui.ajustes.AjustesViewModel
 import com.tecsup.productos.ui.carrito.CarritoScreen
@@ -121,8 +129,9 @@ private fun NavegacionPrincipal(
 
     val entradaActual by navController.currentBackStackEntryAsState()
     val destinoActual = entradaActual?.destination
-    val destinosVisibles = remember(sesion?.rol) {
-        DestinoPrincipal.entries.filter { !it.soloAdmin || sesion?.rol == Rol.ADMIN }
+    val esAdmin = sesion?.rol == Rol.ADMIN
+    val destinosVisibles = remember(esAdmin) {
+        DestinoPrincipal.entries.filter { if (esAdmin) !it.soloCliente else !it.soloAdmin }
     }
     val mostrarBarra = sesion != null && destinosVisibles.any { destino ->
         destinoActual?.hierarchy?.any { it.hasRoute(destino.ruta::class) } == true
@@ -223,14 +232,23 @@ private fun NavegacionPrincipal(
                         val categorias by viewModel.categorias.collectAsStateWithLifecycle()
                         val historial by viewModel.historial.collectAsStateWithLifecycle()
                         val rangoPrecios by viewModel.rangoPrecios.collectAsStateWithLifecycle()
-                        val acciones = remember(viewModel) {
+                        val acciones = remember(viewModel, esAdmin) {
                             AccionesCatalogo(
                                 onReintentar = viewModel::refrescar,
                                 onProductoClick = { item ->
                                     navController.navigate(Rutas.Detalle(item.id, item.imagenUrl))
                                 },
-                                onAlternarFavorito = viewModel::alternarFavorito,
-                                onAgregarAlCarrito = { item -> carritoViewModel.agregar(item) },
+                                onAlternarFavorito = if (esAdmin) null else viewModel::alternarFavorito,
+                                onAgregarAlCarrito = if (esAdmin) {
+                                    null
+                                } else {
+                                    { item -> carritoViewModel.agregar(item) }
+                                },
+                                onEditar = if (esAdmin) {
+                                    { item -> navController.navigate(Rutas.EditarProducto(item.id)) }
+                                } else {
+                                    null
+                                },
                                 onConsultaChange = viewModel::cambiarConsulta,
                                 onBuscar = viewModel::confirmarBusqueda,
                                 onEliminarHistorial = viewModel::eliminarDelHistorial,
@@ -280,15 +298,35 @@ private fun NavegacionPrincipal(
                             factory = DetalleViewModel.factory(container, ruta.id)
                         )
                         val estado by viewModel.estado.collectAsStateWithLifecycle()
+                        val resultadoEdicion by entrada.savedStateHandle
+                            .getStateFlow<String?>(ResultadoEdicion.CLAVE, null)
+                            .collectAsStateWithLifecycle()
+                        LaunchedEffect(resultadoEdicion) {
+                            val resultado = ResultadoEdicion.decodificar(resultadoEdicion)
+                                ?: return@LaunchedEffect
+                            entrada.savedStateHandle.set<String>(ResultadoEdicion.CLAVE, null)
+                            if (resultado.tipo == TipoResultadoEdicion.ELIMINADO) {
+                                navController.navigateUp()
+                            } else {
+                                viewModel.cargar()
+                            }
+                        }
                         DetalleScreen(
                             estado = estado,
                             imagenInicial = ruta.imagen,
                             idProducto = ruta.id,
                             onVolver = { navController.navigateUp() },
                             onReintentar = viewModel::cargar,
-                            onAlternarFavorito = viewModel::alternarFavorito,
-                            onAgregarAlCarrito = { item, cantidad ->
-                                carritoViewModel.agregar(item, cantidad)
+                            onAlternarFavorito = if (esAdmin) null else viewModel::alternarFavorito,
+                            onAgregarAlCarrito = if (esAdmin) {
+                                null
+                            } else {
+                                { item, cantidad -> carritoViewModel.agregar(item, cantidad) }
+                            },
+                            onEditar = if (esAdmin) {
+                                { navController.navigate(Rutas.EditarProducto(ruta.id)) }
+                            } else {
+                                null
                             }
                         )
                     }
@@ -359,7 +397,96 @@ private fun NavegacionPrincipal(
                             resultado = resultado,
                             onSincronizar = viewModel::sincronizar,
                             onLimpiarCache = viewModel::limpiarCache,
-                            onResultadoMostrado = viewModel::resultadoMostrado
+                            onResultadoMostrado = viewModel::resultadoMostrado,
+                            onGestionarProductos = { navController.navigate(Rutas.AdminProductos) },
+                            onGestionarCategorias = { navController.navigate(Rutas.AdminCategorias) }
+                        )
+                    }
+                    pantalla<Rutas.AdminProductos> { entrada ->
+                        if (sesionVigente?.rol != Rol.ADMIN) {
+                            LaunchedEffect(Unit) { navController.navigateUp() }
+                            return@pantalla
+                        }
+                        val viewModel: AdminProductosViewModel = viewModel(
+                            factory = AdminProductosViewModel.factory(container)
+                        )
+                        val estado by viewModel.estado.collectAsStateWithLifecycle()
+                        val consulta by viewModel.consulta.collectAsStateWithLifecycle()
+                        val resultadoEdicion by entrada.savedStateHandle
+                            .getStateFlow<String?>(ResultadoEdicion.CLAVE, null)
+                            .collectAsStateWithLifecycle()
+                        LaunchedEffect(resultadoEdicion) {
+                            val codificado = resultadoEdicion ?: return@LaunchedEffect
+                            ResultadoEdicion.decodificar(codificado)?.let(viewModel::procesarResultado)
+                            entrada.savedStateHandle.set<String>(ResultadoEdicion.CLAVE, null)
+                        }
+                        AdminProductosScreen(
+                            estado = estado,
+                            consulta = consulta,
+                            avisos = viewModel.avisos,
+                            onConsultaChange = viewModel::cambiarConsulta,
+                            onProductoClick = { item ->
+                                navController.navigate(Rutas.EditarProducto(item.id))
+                            },
+                            onNuevoProducto = { navController.navigate(Rutas.EditarProducto()) },
+                            onEliminar = viewModel::eliminar,
+                            onDeshacer = viewModel::deshacer,
+                            onReintentar = { viewModel.cambiarConsulta(consulta) },
+                            onVolver = { navController.navigateUp() }
+                        )
+                    }
+                    pantalla<Rutas.EditarProducto> { entrada ->
+                        if (sesionVigente?.rol != Rol.ADMIN) {
+                            LaunchedEffect(Unit) { navController.navigateUp() }
+                            return@pantalla
+                        }
+                        val ruta = entrada.toRoute<Rutas.EditarProducto>()
+                        val viewModel: EditarProductoViewModel = viewModel(
+                            factory = EditarProductoViewModel.factory(container, ruta.id)
+                        )
+                        val estado by viewModel.estado.collectAsStateWithLifecycle()
+                        val categorias by viewModel.categorias.collectAsStateWithLifecycle()
+                        val resultado by viewModel.resultado.collectAsStateWithLifecycle()
+                        LaunchedEffect(resultado) {
+                            val actual = resultado ?: return@LaunchedEffect
+                            navController.previousBackStackEntry?.savedStateHandle
+                                ?.set(ResultadoEdicion.CLAVE, actual.codificar())
+                            viewModel.resultadoProcesado()
+                            navController.navigateUp()
+                        }
+                        EditarProductoScreen(
+                            estado = estado,
+                            categorias = categorias,
+                            avisos = viewModel.avisos,
+                            onCambiarCampo = viewModel::cambiarCampo,
+                            onSeleccionarCategoria = viewModel::seleccionarCategoria,
+                            onGuardar = viewModel::guardar,
+                            onEliminar = viewModel::eliminar,
+                            onVolver = { navController.navigateUp() }
+                        )
+                    }
+                    pantalla<Rutas.AdminCategorias> {
+                        if (sesionVigente?.rol != Rol.ADMIN) {
+                            LaunchedEffect(Unit) { navController.navigateUp() }
+                            return@pantalla
+                        }
+                        val viewModel: AdminCategoriasViewModel = viewModel(
+                            factory = AdminCategoriasViewModel.factory(container)
+                        )
+                        val estado by viewModel.estado.collectAsStateWithLifecycle()
+                        val edicion by viewModel.edicion.collectAsStateWithLifecycle()
+                        AdminCategoriasScreen(
+                            estado = estado,
+                            edicion = edicion,
+                            avisos = viewModel.avisos,
+                            onNueva = viewModel::abrirNueva,
+                            onEditar = viewModel::abrirEdicion,
+                            onCambiarNombre = viewModel::cambiarNombre,
+                            onGuardar = viewModel::guardar,
+                            onCerrarEdicion = viewModel::cerrarEdicion,
+                            onEliminar = viewModel::eliminar,
+                            onDeshacer = viewModel::deshacer,
+                            onVolver = { navController.navigateUp() }
                         )
                     }
                     pantalla<Rutas.Ajustes> {

@@ -2,6 +2,7 @@ package com.tecsup.productos.data.local
 
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.tecsup.productos.domain.model.TIPO_CAMBIO_DOLAR_A_SOL
 
 val MIGRACION_2_3 = object : Migration(2, 3) {
     override fun migrate(db: SupportSQLiteDatabase) {
@@ -52,6 +53,22 @@ val MIGRACION_3_4 = object : Migration(3, 4) {
         )
         db.execSQL(
             "CREATE INDEX IF NOT EXISTS index_detalles_pedido_pedidoId ON detalles_pedido (pedidoId)"
+        )
+    }
+}
+
+val MIGRACION_4_5 = object : Migration(4, 5) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE items ADD COLUMN eliminado INTEGER NOT NULL DEFAULT 0")
+    }
+}
+
+val MIGRACION_5_6 = object : Migration(5, 6) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("UPDATE items SET precio = ROUND(precio * $TIPO_CAMBIO_DOLAR_A_SOL, 2)")
+        db.execSQL("UPDATE pedidos SET total = ROUND(total * $TIPO_CAMBIO_DOLAR_A_SOL, 2)")
+        db.execSQL(
+            "UPDATE detalles_pedido SET precioUnitario = ROUND(precioUnitario * $TIPO_CAMBIO_DOLAR_A_SOL, 2)"
         )
     }
 }

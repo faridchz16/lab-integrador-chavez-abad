@@ -27,5 +27,7 @@ data class ItemEntity(
     @ColumnInfo(defaultValue = "1")
     val unidadesPorPedido: Int = UNIDADES_POR_PEDIDO_PREDETERMINADAS,
     @ColumnInfo(defaultValue = "0")
-    val editadoLocalmente: Boolean = false
+    val editadoLocalmente: Boolean = false,
+    @ColumnInfo(defaultValue = "0")
+    val eliminado: Boolean = false
 )

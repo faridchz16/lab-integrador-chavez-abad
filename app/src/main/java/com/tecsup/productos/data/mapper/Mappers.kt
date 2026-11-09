@@ -12,12 +12,13 @@ import com.tecsup.productos.domain.carrito.LineaPedido
 import com.tecsup.productos.domain.carrito.Pedido
 import com.tecsup.productos.domain.model.Categoria
 import com.tecsup.productos.domain.model.Item
+import com.tecsup.productos.domain.model.dolaresASoles
 
 fun ItemDto.aEntity(categoriaId: Long?, esFavorito: Boolean = false): ItemEntity = ItemEntity(
     id = id,
     titulo = title,
     marca = brand.orEmpty(),
-    precio = price,
+    precio = price.dolaresASoles(),
     imagenUrl = thumbnail,
     rating = rating,
     stock = stock,
@@ -27,18 +28,16 @@ fun ItemDto.aEntity(categoriaId: Long?, esFavorito: Boolean = false): ItemEntity
     categoriaId = categoriaId
 )
 
-fun ItemEntity.fusionarCon(dto: ItemDto, categoriaId: Long?): ItemEntity {
-    val categoria = this.categoriaId ?: categoriaId
-    if (editadoLocalmente) return copy(categoriaId = categoria, imagenUrl = dto.thumbnail)
+fun ItemEntity.fusionarCon(dto: ItemDto): ItemEntity {
+    if (editadoLocalmente) return this
     return copy(
         titulo = dto.title,
         marca = dto.brand.orEmpty(),
-        precio = dto.price,
+        precio = dto.price.dolaresASoles(),
         imagenUrl = dto.thumbnail,
         rating = dto.rating,
         descuento = dto.discountPercentage,
-        descripcion = dto.description,
-        categoriaId = categoria
+        descripcion = dto.description
     )
 }
 
@@ -68,7 +67,7 @@ fun ItemDto.aModelo(base: Item): Item =
         base.copy(
             titulo = title,
             marca = brand.orEmpty(),
-            precio = price,
+            precio = price.dolaresASoles(),
             imagenUrl = thumbnail,
             descripcion = description,
             rating = rating,
@@ -81,7 +80,7 @@ fun ItemDto.aModelo(esFavorito: Boolean = false): Item = Item(
     id = id,
     titulo = title,
     marca = brand.orEmpty(),
-    precio = price,
+    precio = price.dolaresASoles(),
     imagenUrl = thumbnail,
     esFavorito = esFavorito,
     descripcion = description,

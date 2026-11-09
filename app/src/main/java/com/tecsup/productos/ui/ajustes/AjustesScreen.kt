@@ -72,22 +72,24 @@ fun AjustesScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp)
         ) {
-            SeccionAjustes(titulo = stringResource(R.string.perfil_actividad)) {
-                FilaAcceso(
-                    icono = R.drawable.ic_favorito_borde,
-                    titulo = stringResource(R.string.perfil_favoritos),
-                    cantidad = cantidadFavoritos,
-                    onClick = onAbrirFavoritos
-                )
-                FilaAcceso(
-                    icono = R.drawable.ic_recibo,
-                    titulo = stringResource(R.string.perfil_pedidos),
-                    cantidad = 0,
-                    onClick = onAbrirPedidos
-                )
+            if (sesion?.rol != Rol.ADMIN) {
+                SeccionAjustes(titulo = stringResource(R.string.perfil_actividad)) {
+                    FilaAcceso(
+                        icono = R.drawable.ic_favorito_borde,
+                        titulo = stringResource(R.string.perfil_favoritos),
+                        cantidad = cantidadFavoritos,
+                        onClick = onAbrirFavoritos
+                    )
+                    FilaAcceso(
+                        icono = R.drawable.ic_recibo,
+                        titulo = stringResource(R.string.perfil_pedidos),
+                        cantidad = 0,
+                        onClick = onAbrirPedidos
+                    )
+                }
+                Spacer(modifier = Modifier.height(16.dp))
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
             SeccionAjustes(titulo = stringResource(R.string.ajustes_apariencia)) {
                 Text(
                     text = stringResource(R.string.ajustes_tema),
@@ -193,6 +195,7 @@ fun AjustesScreen(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
+            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }

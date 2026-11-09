@@ -2,7 +2,8 @@
 <resources>
     <string name="lista_titulo">Catálogo</string>
     <string name="lista_aviso_sin_conexion">Sin conexión: mostrando datos guardados</string>
-    <string name="producto_precio">US$ %1$.2f</string>
+    <string name="producto_precio">S/ %1$.2f</string>
+    <string name="producto_editar">Editar %1$s</string>
     <string name="producto_descuento">-%1$d%%</string>
     <string name="producto_rating">★ %1$.1f</string>
     <string name="producto_imagen_descripcion">Imagen de %1$s</string>

@@ -35,11 +35,10 @@ class ItemRepositoryImpl(
         val existentes = dao.todosUnaVez().associateBy { it.id }
         val actualizados = api.listar().products.map { dto ->
             val previo = existentes[dto.id]
-            val categoriaId = previo?.categoriaId ?: obtenerOCrearCategoria(dto.brand)
-            previo?.fusionarCon(dto, categoriaId) ?: dto.aEntity(categoriaId)
+            previo?.fusionarCon(dto) ?: dto.aEntity(obtenerOCrearCategoria(dto.brand))
         }
         dao.guardarTodos(actualizados)
-        Result.success(actualizados.size)
+        Result.success(actualizados.count { !it.eliminado })
     } catch (e: IOException) {
         Result.failure(e)
     } catch (e: HttpException) {
@@ -49,6 +48,10 @@ class ItemRepositoryImpl(
     override suspend fun obtenerDetalle(id: Int): Result<Item> {
         val guardado = dao.porId(id)?.let { entidad ->
             entidad.aModelo(entidad.categoriaId?.let { categoriaDao.porId(it)?.nombre })
+        }
+        if (id < 0) {
+            return guardado?.let { Result.success(it) }
+                ?: Result.failure(NoSuchElementException())
         }
         return try {
             val dto = api.detalle(id)

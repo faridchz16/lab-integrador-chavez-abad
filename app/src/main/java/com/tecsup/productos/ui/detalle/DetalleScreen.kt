@@ -70,18 +70,23 @@ fun DetalleScreen(
     idProducto: Int,
     onVolver: () -> Unit,
     onReintentar: () -> Unit,
-    onAlternarFavorito: () -> Unit,
-    onAgregarAlCarrito: (Item, Int) -> Unit,
-    modifier: Modifier = Modifier
+    onAlternarFavorito: (() -> Unit)?,
+    onAgregarAlCarrito: ((Item, Int) -> Unit)?,
+    modifier: Modifier = Modifier,
+    onEditar: (() -> Unit)? = null
 ) {
     Scaffold(
         modifier = modifier,
         bottomBar = {
             if (estado is UiState.Exito) {
-                BarraAgregarCarrito(
-                    item = estado.datos,
-                    onAgregar = { cantidad -> onAgregarAlCarrito(estado.datos, cantidad) }
-                )
+                if (onAgregarAlCarrito != null) {
+                    BarraAgregarCarrito(
+                        item = estado.datos,
+                        onAgregar = { cantidad -> onAgregarAlCarrito(estado.datos, cantidad) }
+                    )
+                } else if (onEditar != null) {
+                    BarraEditarProducto(onEditar = onEditar)
+                }
             }
         },
         topBar = {
@@ -96,7 +101,7 @@ fun DetalleScreen(
                     }
                 },
                 actions = {
-                    if (estado is UiState.Exito) {
+                    if (estado is UiState.Exito && onAlternarFavorito != null) {
                         BotonFavorito(
                             esFavorito = estado.datos.esFavorito,
                             onClick = onAlternarFavorito
@@ -216,6 +221,30 @@ private fun GaleriaImagenes(item: Item) {
                     .align(Alignment.BottomCenter)
                     .padding(12.dp)
             )
+        }
+    }
+}
+
+@Composable
+private fun BarraEditarProducto(onEditar: () -> Unit) {
+    val interaccion = remember { MutableInteractionSource() }
+    Surface(tonalElevation = 3.dp, shadowElevation = 8.dp) {
+        Button(
+            onClick = onEditar,
+            interactionSource = interaccion,
+            modifier = Modifier
+                .fillMaxWidth()
+                .navigationBarsPadding()
+                .padding(horizontal = 16.dp, vertical = 12.dp)
+                .height(52.dp)
+                .rebote(interaccion)
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.ic_editar),
+                contentDescription = null
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(text = stringResource(R.string.detalle_editar))
         }
     }
 }

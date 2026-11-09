@@ -16,9 +16,8 @@ fun AnimatedContentTransitionScope<NavBackStackEntry>.entradaNavegacion(): Enter
         return scaleIn(tween(DURACION_TRANSICION_MS), initialScale = ESCALA_CARRITO) +
             fadeIn(tween(DURACION_TRANSICION_MS))
     }
-    val desde = initialState.indicePestana()
-    val hacia = targetState.indicePestana()
-    return if (desde != null && hacia != null) {
+    val (desde, hacia) = posiciones()
+    return if (desde != null && hacia != null && desde != hacia) {
         slideIntoContainer(direccion(desde, hacia), tween(DURACION_TRANSICION_MS)) +
             fadeIn(tween(DURACION_TRANSICION_MS))
     } else {
@@ -31,14 +30,28 @@ fun AnimatedContentTransitionScope<NavBackStackEntry>.salidaNavegacion(): ExitTr
         return scaleOut(tween(DURACION_TRANSICION_MS), targetScale = ESCALA_CARRITO) +
             fadeOut(tween(DURACION_TRANSICION_MS))
     }
-    val desde = initialState.indicePestana()
-    val hacia = targetState.indicePestana()
-    return if (desde != null && hacia != null) {
+    val (desde, hacia) = posiciones()
+    return if (desde != null && hacia != null && desde != hacia) {
         slideOutOfContainer(direccion(desde, hacia), tween(DURACION_TRANSICION_MS)) +
             fadeOut(tween(DURACION_TRANSICION_MS))
     } else {
         fadeOut(tween(DURACION_TRANSICION_MS))
     }
+}
+
+private fun AnimatedContentTransitionScope<NavBackStackEntry>.posiciones(): Pair<Int?, Int?> {
+    val pestanaDesde = initialState.indicePestana()
+    val pestanaHacia = targetState.indicePestana()
+    if (pestanaDesde != null && pestanaHacia != null) return pestanaDesde to pestanaHacia
+    return initialState.nivelAdmin() to targetState.nivelAdmin()
+}
+
+private fun NavBackStackEntry.nivelAdmin(): Int? = when {
+    destination.hasRoute(Rutas.Admin::class) -> 0
+    destination.hasRoute(Rutas.AdminProductos::class) -> 1
+    destination.hasRoute(Rutas.AdminCategorias::class) -> 1
+    destination.hasRoute(Rutas.EditarProducto::class) -> 2
+    else -> null
 }
 
 private fun NavBackStackEntry.indicePestana(): Int? =

@@ -3,6 +3,7 @@ package com.tecsup.productos.ui
 import com.tecsup.productos.R
 import com.tecsup.productos.data.recursos.ProveedorTextos
 import com.tecsup.productos.domain.carrito.ErrorPedido
+import com.tecsup.productos.domain.inventario.ErrorInventario
 import com.tecsup.productos.domain.model.ErrorAutenticacion
 import retrofit2.HttpException
 import java.io.IOException
@@ -18,6 +19,8 @@ fun Throwable.aMensajeUsuario(textos: ProveedorTextos): String = when (this) {
         titulo,
         disponible
     )
+    is ErrorInventario.NombreDuplicado -> textos.texto(R.string.inventario_error_duplicado, nombre)
+    is ErrorInventario.NoEncontrado -> textos.texto(R.string.inventario_error_no_encontrado)
     is IOException -> textos.texto(R.string.error_sin_conexion)
     is HttpException -> if (code() == CODIGO_NO_ENCONTRADO) {
         textos.texto(R.string.error_no_encontrado)
