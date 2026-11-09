@@ -8,6 +8,8 @@ import com.tecsup.productos.data.carrito.CarritoRepository
 import com.tecsup.productos.data.carrito.RoomCarritoRepository
 import com.tecsup.productos.data.categorias.CategoriaRepository
 import com.tecsup.productos.data.categorias.RoomCategoriaRepository
+import com.tecsup.productos.data.exportacion.ExportadorArchivos
+import com.tecsup.productos.data.exportacion.ExportadorArchivosAndroid
 import com.tecsup.productos.data.inventario.InventarioRepository
 import com.tecsup.productos.data.inventario.RoomInventarioRepository
 import com.tecsup.productos.data.local.AppDatabase
@@ -26,7 +28,11 @@ import com.tecsup.productos.data.remote.RetrofitClient
 import com.tecsup.productos.data.repository.ItemRepository
 import com.tecsup.productos.data.repository.ItemRepositoryImpl
 import com.tecsup.productos.notification.Notificador
+import com.tecsup.productos.notification.MonitorStock
 import com.tecsup.productos.notification.NotificadorAndroid
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 
 class AppContainer(private val context: Context) {
 
@@ -78,5 +84,15 @@ class AppContainer(private val context: Context) {
 
     val textos: ProveedorTextos by lazy {
         ProveedorTextosAndroid(context)
+    }
+
+    val exportador: ExportadorArchivos by lazy {
+        ExportadorArchivosAndroid(context)
+    }
+
+    private val alcanceAplicacion = CoroutineScope(SupervisorJob() + Dispatchers.Default)
+
+    val monitorStock: MonitorStock by lazy {
+        MonitorStock(itemRepository, notificador, textos, alcanceAplicacion)
     }
 }

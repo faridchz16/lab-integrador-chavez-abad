@@ -37,5 +37,8 @@ sealed interface Rutas {
     data object AdminCategorias : Rutas
 
     @Serializable
+    data object Alertas : Rutas
+
+    @Serializable
     data object Ajustes : Rutas
 }

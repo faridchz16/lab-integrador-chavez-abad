@@ -9,5 +9,6 @@ class ProductosApp : Application() {
     override fun onCreate() {
         super.onCreate()
         container = AppContainer(this)
+        container.monitorStock.iniciar()
     }
 }

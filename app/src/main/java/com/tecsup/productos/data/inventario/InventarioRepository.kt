@@ -8,6 +8,7 @@ interface InventarioRepository {
     suspend fun guardarProducto(producto: Item, nuevo: Boolean): Int
     suspend fun eliminarProducto(id: Int)
     suspend fun restaurarProducto(id: Int)
+    suspend fun actualizarStock(id: Int, stock: Int)
     suspend fun crearCategoria(nombre: String): Long
     suspend fun renombrarCategoria(id: Long, nombre: String)
     suspend fun eliminarCategoria(id: Long): CategoriaEliminada

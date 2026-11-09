@@ -52,6 +52,9 @@ interface ItemDao {
     @Query("UPDATE items SET stock = MAX(stock - :unidades, 0) WHERE id = :id")
     suspend fun descontarStock(id: Int, unidades: Int)
 
+    @Query("UPDATE items SET stock = :stock WHERE id = :id")
+    suspend fun actualizarStock(id: Int, stock: Int)
+
     @Query("UPDATE items SET eliminado = :eliminado WHERE id = :id")
     suspend fun marcarEliminado(id: Int, eliminado: Boolean)
 

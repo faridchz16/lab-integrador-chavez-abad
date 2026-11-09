@@ -48,6 +48,7 @@ private fun AnimatedContentTransitionScope<NavBackStackEntry>.posiciones(): Pair
 
 private fun NavBackStackEntry.nivelAdmin(): Int? = when {
     destination.hasRoute(Rutas.Admin::class) -> 0
+    destination.hasRoute(Rutas.Alertas::class) -> 0
     destination.hasRoute(Rutas.AdminProductos::class) -> 1
     destination.hasRoute(Rutas.AdminCategorias::class) -> 1
     destination.hasRoute(Rutas.EditarProducto::class) -> 2

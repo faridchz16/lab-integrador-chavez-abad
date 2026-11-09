@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="alertas_titulo">Alertas de stock</string>
+    <string name="alertas_vacio_titulo">Todo en orden</string>
+    <string name="alertas_vacio_mensaje">Ningún producto necesita atención. Te avisaremos cuando el stock baje del mínimo.</string>
+    <string name="alertas_filtro_vacio_titulo">Sin alertas de este tipo</string>
+    <string name="alertas_filtro_vacio_mensaje">Elige otro filtro para ver el resto de alertas.</string>
+    <string name="alertas_filtro_todas">Todas · %1$d</string>
+    <string name="alertas_nivel_agotado">Agotado</string>
+    <string name="alertas_nivel_bajo">Bajo el mínimo</string>
+    <string name="alertas_nivel_cerca">Cerca del mínimo</string>
+    <string name="alertas_nivel_sobre">Sobre el máximo</string>
+    <string name="alertas_detalle_agotado">Sin unidades · mínimo %1$d</string>
+    <string name="alertas_detalle_quedan">Quedan %1$d · mínimo %2$d</string>
+    <string name="alertas_detalle_sobre">%1$d unidades · máximo %2$d</string>
+    <plurals name="alertas_sugerencia">
+        <item quantity="one">Sugerido: reponer %1$d unidad</item>
+        <item quantity="many">Sugerido: reponer %1$d unidades</item>
+        <item quantity="other">Sugerido: reponer %1$d unidades</item>
+    </plurals>
+    <plurals name="alertas_excedente">
+        <item quantity="one">%1$d unidad por encima del máximo</item>
+        <item quantity="many">%1$d unidades por encima del máximo</item>
+        <item quantity="other">%1$d unidades por encima del máximo</item>
+    </plurals>
+    <string name="alertas_reponer">Reponer</string>
+    <string name="alertas_reponer_titulo">Reponer stock</string>
+    <string name="alertas_reponer_resumen">Stock actual: %1$d → nuevo stock: %2$d</string>
+    <string name="alertas_sumar">+%1$d</string>
+    <string name="alertas_hasta_maximo">Hasta el máximo</string>
+    <plurals name="alertas_repuesto">
+        <item quantity="one">Se repuso %1$d unidad de «%2$s»</item>
+        <item quantity="many">Se repusieron %1$d unidades de «%2$s»</item>
+        <item quantity="other">Se repusieron %1$d unidades de «%2$s»</item>
+    </plurals>
+    <string name="alertas_reposicion_deshecha">Se restauró el stock anterior de «%1$s»</string>
+
+    <string name="alertas_canal_nombre">Alertas de stock</string>
+    <string name="alertas_canal_descripcion">Avisos cuando un producto baja del stock mínimo o se agota</string>
+    <string name="alertas_notificacion_agotado_titulo">Agotado: %1$s</string>
+    <string name="alertas_notificacion_agotado_texto">Ya no quedan unidades. Repón el stock desde la pestaña Alertas.</string>
+    <string name="alertas_notificacion_bajo_titulo">Stock bajo: %1$s</string>
+    <string name="alertas_notificacion_bajo_texto">Quedan %1$d unidades y el mínimo es %2$d. Repón el stock desde la pestaña Alertas.</string>
+    <plurals name="alertas_notificacion_varios_titulo">
+        <item quantity="one">%1$d producto necesita reposición</item>
+        <item quantity="many">%1$d productos necesitan reposición</item>
+        <item quantity="other">%1$d productos necesitan reposición</item>
+    </plurals>
+    <string name="alertas_notificacion_y_mas">" y %1$d más"</string>
+
+    <string name="csv_encabezados">ID|Producto|Marca|Categoría|Precio (S/)|Descuento (%%)|Precio final (S/)|Stock|Stock mínimo|Stock máximo|Unidades por pedido|Estado</string>
+    <string name="csv_estado_disponible">Disponible</string>
+    <string name="csv_estado_cerca">Cerca del mínimo</string>
+    <string name="csv_estado_bajo">Bajo el mínimo</string>
+    <string name="csv_estado_agotado">Agotado</string>
+    <string name="csv_estado_sobre">Sobre el máximo</string>
+    <string name="csv_estado_sin_dato">Sin dato</string>
+</resources>

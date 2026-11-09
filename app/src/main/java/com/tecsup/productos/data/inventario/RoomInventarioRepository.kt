@@ -61,6 +61,10 @@ class RoomInventarioRepository(
         itemDao.marcarEliminado(id, eliminado = false)
     }
 
+    override suspend fun actualizarStock(id: Int, stock: Int) {
+        itemDao.actualizarStock(id, stock.coerceAtLeast(0))
+    }
+
     override suspend fun crearCategoria(nombre: String): Long {
         val limpio = nombre.trim()
         if (categoriaDao.porNombre(limpio) != null) throw ErrorInventario.NombreDuplicado(limpio)

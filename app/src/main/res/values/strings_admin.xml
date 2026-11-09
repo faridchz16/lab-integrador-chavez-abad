@@ -47,6 +47,15 @@
         <item quantity="many">%1$d categorías · crear, renombrar y eliminar</item>
         <item quantity="other">%1$d categorías · crear, renombrar y eliminar</item>
     </plurals>
+    <string name="admin_exportar">Exportar inventario (CSV)</string>
+    <string name="admin_exportar_ayuda">Guarda un archivo CSV con precios, stock y estado de cada producto. Se abre en Excel o Google Sheets.</string>
+    <string name="admin_exportar_error">No se pudo guardar el archivo. Intenta de nuevo en otra carpeta.</string>
+    <string name="admin_nombre_archivo_csv">inventario-stockify-%1$s.csv</string>
+    <plurals name="admin_exportado">
+        <item quantity="one">Se exportó %1$d producto</item>
+        <item quantity="many">Se exportaron %1$d productos</item>
+        <item quantity="other">Se exportaron %1$d productos</item>
+    </plurals>
     <plurals name="admin_sincronizado">
         <item quantity="one">Se guardó %1$d producto</item>
         <item quantity="many">Se guardaron %1$d productos</item>

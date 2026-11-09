@@ -38,6 +38,13 @@ enum class DestinoPrincipal(
         iconoInactivo = R.drawable.ic_panel_admin_borde,
         soloAdmin = true
     ),
+    ALERTAS(
+        ruta = Rutas.Alertas,
+        etiqueta = R.string.navegacion_alertas,
+        iconoActivo = R.drawable.ic_alertas,
+        iconoInactivo = R.drawable.ic_alertas_borde,
+        soloAdmin = true
+    ),
     AJUSTES(
         ruta = Rutas.Ajustes,
         etiqueta = R.string.navegacion_perfil,

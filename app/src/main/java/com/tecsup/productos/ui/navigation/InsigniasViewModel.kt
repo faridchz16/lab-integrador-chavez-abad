@@ -7,6 +7,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.tecsup.productos.AppContainer
 import com.tecsup.productos.data.repository.ItemRepository
+import com.tecsup.productos.domain.inventario.cantidadPorReponer
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
@@ -19,6 +20,15 @@ class InsigniasViewModel(
 
     val favoritos: StateFlow<Int> = repo.favoritos
         .map { lista -> lista.size }
+        .catch { emit(0) }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(TIEMPO_ESPERA_MS),
+            initialValue = 0
+        )
+
+    val porReponer: StateFlow<Int> = repo.items
+        .map { lista -> lista.cantidadPorReponer() }
         .catch { emit(0) }
         .stateIn(
             scope = viewModelScope,

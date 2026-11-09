@@ -1,5 +1,7 @@
 package com.tecsup.productos.ui.admin
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.core.animateFloatAsState
@@ -85,9 +87,17 @@ fun AdminScreen(
     onResultadoMostrado: () -> Unit,
     onGestionarProductos: () -> Unit,
     onGestionarCategorias: () -> Unit,
+    onExportar: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
+    val lanzadorExportacion = rememberLauncherForActivityResult(
+        ActivityResultContracts.CreateDocument(TIPO_CSV)
+    ) { destino -> destino?.let { onExportar(it.toString()) } }
+    val nombreArchivo = stringResource(
+        R.string.admin_nombre_archivo_csv,
+        remember { SimpleDateFormat(PATRON_FECHA_ARCHIVO, Locale.US).format(Date()) }
+    )
     val recursos = LocalContext.current.resources
     var confirmarLimpieza by rememberSaveable { mutableStateOf(false) }
 
@@ -100,6 +110,11 @@ fun AdminScreen(
                 actual.cantidad
             )
             ResultadoAdmin.CacheLimpiada -> recursos.getString(R.string.admin_cache_limpiada)
+            is ResultadoAdmin.Exportado -> recursos.getQuantityString(
+                R.plurals.admin_exportado,
+                actual.cantidad,
+                actual.cantidad
+            )
             is ResultadoAdmin.Error -> actual.mensaje
         }
         snackbarHostState.showSnackbar(mensaje)
@@ -138,7 +153,8 @@ fun AdminScreen(
                         onSincronizar = onSincronizar,
                         onLimpiarCache = { confirmarLimpieza = true },
                         onGestionarProductos = onGestionarProductos,
-                        onGestionarCategorias = onGestionarCategorias
+                        onGestionarCategorias = onGestionarCategorias,
+                        onExportar = { lanzadorExportacion.launch(nombreArchivo) }
                     )
                 }
             }
@@ -170,7 +186,8 @@ private fun ContenidoAdmin(
     onSincronizar: () -> Unit,
     onLimpiarCache: () -> Unit,
     onGestionarProductos: () -> Unit,
-    onGestionarCategorias: () -> Unit
+    onGestionarCategorias: () -> Unit,
+    onExportar: () -> Unit
 ) {
     val resumen = panel.resumen
     Column(
@@ -270,6 +287,7 @@ private fun ContenidoAdmin(
         AccionesAdmin(
             trabajando = trabajando,
             onSincronizar = onSincronizar,
+            onExportar = onExportar,
             onLimpiarCache = onLimpiarCache
         )
         Spacer(modifier = Modifier.height(24.dp))
@@ -546,9 +564,11 @@ private fun TarjetaGestion(
 private fun AccionesAdmin(
     trabajando: Boolean,
     onSincronizar: () -> Unit,
+    onExportar: () -> Unit,
     onLimpiarCache: () -> Unit
 ) {
     val interaccionSincronizar = remember { MutableInteractionSource() }
+    val interaccionExportar = remember { MutableInteractionSource() }
     val interaccionLimpiar = remember { MutableInteractionSource() }
     Button(
         onClick = onSincronizar,
@@ -576,6 +596,28 @@ private fun AccionesAdmin(
     }
     Text(
         text = stringResource(R.string.admin_sincronizar_ayuda),
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.padding(top = 6.dp, bottom = 16.dp)
+    )
+    OutlinedButton(
+        onClick = onExportar,
+        enabled = !trabajando,
+        interactionSource = interaccionExportar,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(52.dp)
+            .rebote(interaccionExportar)
+    ) {
+        Icon(
+            painter = painterResource(R.drawable.ic_descargar),
+            contentDescription = null
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(text = stringResource(R.string.admin_exportar))
+    }
+    Text(
+        text = stringResource(R.string.admin_exportar_ayuda),
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         modifier = Modifier.padding(top = 6.dp, bottom = 16.dp)
@@ -654,6 +696,8 @@ private fun TarjetaEstadistica(
 
 private const val LARGO_VALOR_COMPACTO = 9
 private const val PATRON_DIA = "EEE"
+private const val PATRON_FECHA_ARCHIVO = "yyyy-MM-dd"
+private const val TIPO_CSV = "text/csv"
 private const val ETIQUETA_IDIOMA = "es-PE"
 
 @Preview(showBackground = true)
@@ -676,7 +720,8 @@ private fun AdminScreenPreview() {
             onLimpiarCache = {},
             onResultadoMostrado = {},
             onGestionarProductos = {},
-            onGestionarCategorias = {}
+            onGestionarCategorias = {},
+            onExportar = {}
         )
     }
 }

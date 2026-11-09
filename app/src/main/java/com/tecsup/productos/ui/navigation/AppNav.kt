@@ -62,6 +62,8 @@ import com.tecsup.productos.ui.admin.productos.AdminProductosViewModel
 import com.tecsup.productos.ui.admin.productos.EditarProductoScreen
 import com.tecsup.productos.ui.admin.productos.EditarProductoViewModel
 import com.tecsup.productos.ui.ajustes.AjustesScreen
+import com.tecsup.productos.ui.alertas.AlertasScreen
+import com.tecsup.productos.ui.alertas.AlertasViewModel
 import com.tecsup.productos.ui.ajustes.AjustesViewModel
 import com.tecsup.productos.ui.carrito.CarritoScreen
 import com.tecsup.productos.ui.carrito.CarritoViewModel
@@ -141,6 +143,7 @@ private fun NavegacionPrincipal(
         factory = InsigniasViewModel.factory(container)
     )
     val cantidadFavoritos by insigniasViewModel.favoritos.collectAsStateWithLifecycle()
+    val cantidadPorReponer by insigniasViewModel.porReponer.collectAsStateWithLifecycle()
 
     val carritoViewModel: CarritoViewModel = viewModel(
         factory = CarritoViewModel.factory(container)
@@ -178,7 +181,10 @@ private fun NavegacionPrincipal(
                 BarraNavegacion(
                     destinos = destinosVisibles,
                     destinoActual = destinoActual,
-                    insignias = mapOf(DestinoPrincipal.CARRITO to cantidadCarrito),
+                    insignias = mapOf(
+                        DestinoPrincipal.CARRITO to cantidadCarrito,
+                        DestinoPrincipal.ALERTAS to cantidadPorReponer
+                    ),
                     onSeleccionar = { destino -> navController.irAPestana(destino) }
                 )
             }
@@ -399,7 +405,8 @@ private fun NavegacionPrincipal(
                             onLimpiarCache = viewModel::limpiarCache,
                             onResultadoMostrado = viewModel::resultadoMostrado,
                             onGestionarProductos = { navController.navigate(Rutas.AdminProductos) },
-                            onGestionarCategorias = { navController.navigate(Rutas.AdminCategorias) }
+                            onGestionarCategorias = { navController.navigate(Rutas.AdminCategorias) },
+                            onExportar = viewModel::exportarInventario
                         )
                     }
                     pantalla<Rutas.AdminProductos> { entrada ->
@@ -463,6 +470,37 @@ private fun NavegacionPrincipal(
                             onGuardar = viewModel::guardar,
                             onEliminar = viewModel::eliminar,
                             onVolver = { navController.navigateUp() }
+                        )
+                    }
+                    pantalla<Rutas.Alertas> { entrada ->
+                        if (sesionVigente?.rol != Rol.ADMIN) {
+                            LaunchedEffect(Unit) { navController.navigateUp() }
+                            return@pantalla
+                        }
+                        val viewModel: AlertasViewModel = viewModel(
+                            factory = AlertasViewModel.factory(container)
+                        )
+                        val estado by viewModel.estado.collectAsStateWithLifecycle()
+                        val filtro by viewModel.filtro.collectAsStateWithLifecycle()
+                        val resultadoEdicion by entrada.savedStateHandle
+                            .getStateFlow<String?>(ResultadoEdicion.CLAVE, null)
+                            .collectAsStateWithLifecycle()
+                        LaunchedEffect(resultadoEdicion) {
+                            val codificado = resultadoEdicion ?: return@LaunchedEffect
+                            ResultadoEdicion.decodificar(codificado)?.let(viewModel::procesarResultado)
+                            entrada.savedStateHandle.set<String>(ResultadoEdicion.CLAVE, null)
+                        }
+                        AlertasScreen(
+                            estado = estado,
+                            filtro = filtro,
+                            avisos = viewModel.avisos,
+                            onSeleccionarFiltro = viewModel::seleccionarFiltro,
+                            onProductoClick = { item ->
+                                navController.navigate(Rutas.EditarProducto(item.id))
+                            },
+                            onReponer = viewModel::reponer,
+                            onDeshacer = viewModel::deshacer,
+                            onReintentar = { viewModel.seleccionarFiltro(null) }
                         )
                     }
                     pantalla<Rutas.AdminCategorias> {

@@ -8,9 +8,12 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.tecsup.productos.AppContainer
 import com.tecsup.productos.R
 import com.tecsup.productos.data.categorias.CategoriaRepository
+import com.tecsup.productos.data.exportacion.ExportadorArchivos
 import com.tecsup.productos.data.pedidos.PedidoRepository
 import com.tecsup.productos.data.recursos.ProveedorTextos
 import com.tecsup.productos.data.repository.ItemRepository
+import com.tecsup.productos.domain.inventario.generarCsvInventario
+import com.tecsup.productos.domain.model.EstadoStock
 import com.tecsup.productos.notification.Notificador
 import com.tecsup.productos.ui.UiState
 import com.tecsup.productos.ui.aMensajeUsuario
@@ -21,12 +24,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 sealed interface ResultadoAdmin {
     data class Sincronizado(val cantidad: Int) : ResultadoAdmin
     data object CacheLimpiada : ResultadoAdmin
+    data class Exportado(val cantidad: Int) : ResultadoAdmin
     data class Error(val mensaje: String) : ResultadoAdmin
 }
 
@@ -36,6 +41,7 @@ class AdminViewModel(
     categoriaRepository: CategoriaRepository,
     private val notificador: Notificador,
     private val textos: ProveedorTextos,
+    private val exportador: ExportadorArchivos,
     private val reloj: () -> Long = System::currentTimeMillis
 ) : ViewModel() {
 
@@ -79,6 +85,34 @@ class AdminViewModel(
         ResultadoAdmin.CacheLimpiada
     }
 
+    fun exportarInventario(destino: String) = ejecutar {
+        val items = repo.items.first()
+        val contenido = generarCsvInventario(
+            items = items,
+            encabezados = textos.texto(R.string.csv_encabezados).split(SEPARADOR_ENCABEZADOS),
+            etiquetaEstado = this::etiquetaEstado
+        )
+        try {
+            exportador.escribirTexto(destino, contenido)
+            ResultadoAdmin.Exportado(items.size)
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            ResultadoAdmin.Error(textos.texto(R.string.admin_exportar_error))
+        }
+    }
+
+    private fun etiquetaEstado(estado: EstadoStock): String = textos.texto(
+        when (estado) {
+            EstadoStock.DISPONIBLE -> R.string.csv_estado_disponible
+            EstadoStock.CERCA_MINIMO -> R.string.csv_estado_cerca
+            EstadoStock.BAJO_MINIMO -> R.string.csv_estado_bajo
+            EstadoStock.AGOTADO -> R.string.csv_estado_agotado
+            EstadoStock.SOBRE_MAXIMO -> R.string.csv_estado_sobre
+            EstadoStock.SIN_DATO -> R.string.csv_estado_sin_dato
+        }
+    )
+
     fun resultadoMostrado() {
         _resultado.value = null
     }
@@ -101,6 +135,7 @@ class AdminViewModel(
 
     companion object {
         private const val TIEMPO_ESPERA_MS = 5_000L
+        private const val SEPARADOR_ENCABEZADOS = "|"
 
         fun factory(container: AppContainer): ViewModelProvider.Factory = viewModelFactory {
             initializer {
@@ -109,7 +144,8 @@ class AdminViewModel(
                     pedidoRepository = container.pedidoRepository,
                     categoriaRepository = container.categoriaRepository,
                     notificador = container.notificador,
-                    textos = container.textos
+                    textos = container.textos,
+                    exportador = container.exportador
                 )
             }
         }
