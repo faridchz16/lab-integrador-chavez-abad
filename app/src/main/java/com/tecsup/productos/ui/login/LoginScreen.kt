@@ -5,6 +5,7 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -57,6 +58,7 @@ import com.tecsup.productos.domain.validacion.ErrorCampo
 import com.tecsup.productos.domain.validacion.ValidadorLogin
 import com.tecsup.productos.ui.UiState
 import com.tecsup.productos.ui.components.LogoStockify
+import com.tecsup.productos.ui.components.rebote
 import com.tecsup.productos.ui.theme.ProductosTheme
 import kotlinx.coroutines.launch
 
@@ -74,6 +76,7 @@ fun LoginScreen(
     val errorClave = formulario.errorClave
     val focusManager = LocalFocusManager.current
     var mostrarClave by rememberSaveable { mutableStateOf(false) }
+    val interaccionIngresar = remember { MutableInteractionSource() }
     val ingresar = {
         focusManager.clearFocus()
         onIngresar()
@@ -214,9 +217,11 @@ fun LoginScreen(
                     Button(
                         onClick = ingresar,
                         enabled = !cargando,
+                        interactionSource = interaccionIngresar,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(52.dp)
+                            .rebote(interaccionIngresar)
                     ) {
                         if (cargando) {
                             CircularProgressIndicator(

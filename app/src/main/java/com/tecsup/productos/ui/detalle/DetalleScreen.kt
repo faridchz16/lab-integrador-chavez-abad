@@ -1,6 +1,5 @@
 package com.tecsup.productos.ui.detalle
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -42,6 +41,8 @@ import com.tecsup.productos.ui.components.BotonFavorito
 import com.tecsup.productos.ui.components.Cargando
 import com.tecsup.productos.ui.components.ErrorView
 import com.tecsup.productos.ui.components.EtiquetasProducto
+import com.tecsup.productos.ui.components.claveImagenProducto
+import com.tecsup.productos.ui.components.elementoCompartido
 import com.tecsup.productos.ui.components.ImagenProducto
 import com.tecsup.productos.ui.components.PrecioProducto
 import com.tecsup.productos.ui.lista.ProductosDePrueba
@@ -51,6 +52,8 @@ import com.tecsup.productos.ui.theme.ProductosTheme
 @Composable
 fun DetalleScreen(
     estado: UiState<Item>,
+    imagenInicial: String?,
+    idProducto: Int,
     onVolver: () -> Unit,
     onReintentar: () -> Unit,
     onAlternarFavorito: () -> Unit,
@@ -85,19 +88,16 @@ fun DetalleScreen(
                 .fillMaxSize()
                 .padding(padding)
         ) {
-            AnimatedContent(
-                targetState = estado,
-                contentKey = { it::class },
-                label = "estadoDetalle"
-            ) { actual ->
-                when (actual) {
-                    UiState.Cargando -> Cargando()
-                    is UiState.Error -> ErrorView(
-                        mensaje = actual.mensaje,
-                        onReintentar = onReintentar
-                    )
-                    is UiState.Exito -> ContenidoDetalle(item = actual.datos)
-                }
+            when (estado) {
+                UiState.Cargando -> CargandoDetalle(
+                    imagen = imagenInicial,
+                    idProducto = idProducto
+                )
+                is UiState.Error -> ErrorView(
+                    mensaje = estado.mensaje,
+                    onReintentar = onReintentar
+                )
+                is UiState.Exito -> ContenidoDetalle(item = estado.datos)
             }
         }
     }
@@ -151,6 +151,7 @@ private fun ContenidoDetalle(item: Item) {
 private fun GaleriaImagenes(item: Item) {
     val imagenes = item.imagenes.ifEmpty { listOfNotNull(item.imagenUrl) }
     val modificador = Modifier
+        .elementoCompartido(claveImagenProducto(item.id))
         .fillMaxWidth()
         .aspectRatio(1f)
     if (imagenes.isEmpty()) {
@@ -193,6 +194,22 @@ private fun GaleriaImagenes(item: Item) {
 }
 
 @Composable
+private fun CargandoDetalle(imagen: String?, idProducto: Int) {
+    Column(modifier = Modifier.fillMaxSize()) {
+        ImagenProducto(
+            url = imagen,
+            contentDescription = null,
+            contentScale = ContentScale.Fit,
+            modifier = Modifier
+                .elementoCompartido(claveImagenProducto(idProducto))
+                .fillMaxWidth()
+                .aspectRatio(1f)
+        )
+        Cargando(modifier = Modifier.weight(1f))
+    }
+}
+
+@Composable
 private fun IndicadorPaginas(
     total: Int,
     actual: Int,
@@ -224,6 +241,8 @@ private fun IndicadorPaginas(
 private fun DetalleScreenPreview() {
     ProductosTheme {
         DetalleScreen(
+            imagenInicial = null,
+            idProducto = 1,
             estado = UiState.Exito(
                 ProductosDePrueba.lista.first().copy(
                     descripcion = "Pantalla Super Retina XDR, chip A15 Bionic y triple cámara."
@@ -241,6 +260,8 @@ private fun DetalleScreenPreview() {
 private fun DetalleScreenErrorPreview() {
     ProductosTheme {
         DetalleScreen(
+            imagenInicial = null,
+            idProducto = 1,
             estado = UiState.Error(stringResource(R.string.estado_error_ejemplo)),
             onVolver = {},
             onReintentar = {},

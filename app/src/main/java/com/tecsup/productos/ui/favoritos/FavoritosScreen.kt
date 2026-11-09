@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
@@ -22,16 +20,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tecsup.productos.R
 import com.tecsup.productos.domain.model.Item
 import com.tecsup.productos.ui.UiState
-import com.tecsup.productos.ui.components.Cargando
 import com.tecsup.productos.ui.components.ErrorView
 import com.tecsup.productos.ui.components.EstadoVacio
+import com.tecsup.productos.ui.components.ListaEsqueleto
 import com.tecsup.productos.ui.components.ProductoCard
 import com.tecsup.productos.ui.lista.ProductosDePrueba
 import com.tecsup.productos.ui.theme.ProductosTheme
@@ -41,9 +38,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun FavoritosScreen(
     estado: UiState<List<Item>>,
-    onVolver: () -> Unit,
     onReintentar: () -> Unit,
-    onProductoClick: (Int) -> Unit,
+    onProductoClick: (Item) -> Unit,
     onAlternarFavorito: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -72,15 +68,7 @@ fun FavoritosScreen(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             TopAppBar(
-                title = { Text(text = stringResource(R.string.favoritos_titulo)) },
-                navigationIcon = {
-                    IconButton(onClick = onVolver) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_volver),
-                            contentDescription = stringResource(R.string.detalle_volver)
-                        )
-                    }
-                }
+                title = { Text(text = stringResource(R.string.favoritos_titulo)) }
             )
         }
     ) { padding ->
@@ -95,7 +83,7 @@ fun FavoritosScreen(
                 label = "estadoFavoritos"
             ) { actual ->
                 when (actual) {
-                    UiState.Cargando -> Cargando()
+                    UiState.Cargando -> ListaEsqueleto()
                     is UiState.Error -> ErrorView(
                         mensaje = actual.mensaje,
                         onReintentar = onReintentar
@@ -121,7 +109,7 @@ fun FavoritosScreen(
 @Composable
 private fun ListaFavoritos(
     productos: List<Item>,
-    onProductoClick: (Int) -> Unit,
+    onProductoClick: (Item) -> Unit,
     onQuitar: (Int) -> Unit
 ) {
     LazyColumn(
@@ -132,7 +120,7 @@ private fun ListaFavoritos(
         items(items = productos, key = { it.id }) { item ->
             ProductoCard(
                 item = item,
-                onClick = { onProductoClick(item.id) },
+                onClick = { onProductoClick(item) },
                 onAlternarFavorito = { onQuitar(item.id) },
                 modifier = Modifier.animateItem()
             )
@@ -148,7 +136,6 @@ private fun FavoritosScreenPreview() {
             estado = UiState.Exito(
                 ProductosDePrueba.lista.map { it.copy(esFavorito = true) }.take(2)
             ),
-            onVolver = {},
             onReintentar = {},
             onProductoClick = {},
             onAlternarFavorito = {}
@@ -162,7 +149,6 @@ private fun FavoritosScreenVacioPreview() {
     ProductosTheme {
         FavoritosScreen(
             estado = UiState.Exito(emptyList()),
-            onVolver = {},
             onReintentar = {},
             onProductoClick = {},
             onAlternarFavorito = {}

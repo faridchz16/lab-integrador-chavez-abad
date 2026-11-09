@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="navegacion_catalogo">Catálogo</string>
+    <string name="navegacion_favoritos">Favoritos</string>
+    <string name="navegacion_admin">Panel</string>
+    <string name="navegacion_ajustes">Ajustes</string>
+    <string name="carga_productos">Cargando productos</string>
+    <plurals name="navegacion_insignia">
+        <item quantity="one">%1$d elemento</item>
+        <item quantity="many">%1$d elementos</item>
+        <item quantity="other">%1$d elementos</item>
+    </plurals>
+</resources>

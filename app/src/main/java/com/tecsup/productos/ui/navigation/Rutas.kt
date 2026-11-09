@@ -10,7 +10,7 @@ sealed interface Rutas {
     data object Lista : Rutas
 
     @Serializable
-    data class Detalle(val id: Int) : Rutas
+    data class Detalle(val id: Int, val imagen: String? = null) : Rutas
 
     @Serializable
     data object Favoritos : Rutas

@@ -15,7 +15,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -46,22 +45,13 @@ fun AjustesScreen(
     modoTema: ModoTema,
     onCambiarModoTema: (ModoTema) -> Unit,
     onCerrarSesion: () -> Unit,
-    onVolver: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
         modifier = modifier,
         topBar = {
             TopAppBar(
-                title = { Text(text = stringResource(R.string.ajustes_titulo)) },
-                navigationIcon = {
-                    IconButton(onClick = onVolver) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_volver),
-                            contentDescription = stringResource(R.string.detalle_volver)
-                        )
-                    }
-                }
+                title = { Text(text = stringResource(R.string.ajustes_titulo)) }
             )
         }
     ) { padding ->
@@ -221,8 +211,7 @@ private fun AjustesScreenPreview() {
             sesion = Sesion(uid = "1", correo = "admin@productos.com", rol = Rol.ADMIN),
             modoTema = ModoTema.SISTEMA,
             onCambiarModoTema = {},
-            onCerrarSesion = {},
-            onVolver = {}
+            onCerrarSesion = {}
         )
     }
 }

@@ -28,10 +28,10 @@ import com.tecsup.productos.R
 import com.tecsup.productos.domain.model.Item
 import com.tecsup.productos.ui.UiState
 import com.tecsup.productos.ui.components.AvisoBanner
-import com.tecsup.productos.ui.components.Cargando
 import com.tecsup.productos.ui.components.ErrorView
 import com.tecsup.productos.ui.components.LogoStockify
 import com.tecsup.productos.ui.components.EstadoVacio
+import com.tecsup.productos.ui.components.ListaEsqueleto
 import com.tecsup.productos.ui.components.ProductoCard
 import com.tecsup.productos.ui.theme.ProductosTheme
 
@@ -41,7 +41,7 @@ fun ListaScreen(
     estado: UiState<List<Item>>,
     aviso: String?,
     onReintentar: () -> Unit,
-    onProductoClick: (Int) -> Unit,
+    onProductoClick: (Item) -> Unit,
     onAlternarFavorito: (Int) -> Unit,
     modifier: Modifier = Modifier,
     acciones: @Composable RowScope.() -> Unit = {}
@@ -86,7 +86,7 @@ fun ListaScreen(
                     label = "estadoLista"
                 ) { actual ->
                     when (actual) {
-                        UiState.Cargando -> Cargando()
+                        UiState.Cargando -> ListaEsqueleto()
                         is UiState.Error -> ErrorView(
                             mensaje = actual.mensaje,
                             onReintentar = onReintentar
@@ -110,7 +110,7 @@ fun ListaScreen(
 @Composable
 private fun ListaProductos(
     productos: List<Item>,
-    onProductoClick: (Int) -> Unit,
+    onProductoClick: (Item) -> Unit,
     onAlternarFavorito: (Int) -> Unit
 ) {
     LazyColumn(
@@ -121,7 +121,7 @@ private fun ListaProductos(
         items(items = productos, key = { it.id }) { item ->
             ProductoCard(
                 item = item,
-                onClick = { onProductoClick(item.id) },
+                onClick = { onProductoClick(item) },
                 onAlternarFavorito = { onAlternarFavorito(item.id) },
                 modifier = Modifier.animateItem()
             )

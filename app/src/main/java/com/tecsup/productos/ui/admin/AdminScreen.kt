@@ -1,6 +1,7 @@
 package com.tecsup.productos.ui.admin
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,14 +15,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -29,7 +28,6 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -50,7 +48,9 @@ import androidx.compose.ui.unit.dp
 import com.tecsup.productos.R
 import com.tecsup.productos.ui.UiState
 import com.tecsup.productos.ui.components.Cargando
+import com.tecsup.productos.ui.components.DialogoConfirmacion
 import com.tecsup.productos.ui.components.ErrorView
+import com.tecsup.productos.ui.components.rebote
 import com.tecsup.productos.ui.theme.ProductosTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -60,7 +60,6 @@ fun AdminScreen(
     estado: UiState<ResumenAdmin>,
     trabajando: Boolean,
     resultado: ResultadoAdmin?,
-    onVolver: () -> Unit,
     onSincronizar: () -> Unit,
     onLimpiarCache: () -> Unit,
     onResultadoMostrado: () -> Unit,
@@ -90,15 +89,7 @@ fun AdminScreen(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             TopAppBar(
-                title = { Text(text = stringResource(R.string.admin_titulo)) },
-                navigationIcon = {
-                    IconButton(onClick = onVolver) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_volver),
-                            contentDescription = stringResource(R.string.detalle_volver)
-                        )
-                    }
-                }
+                title = { Text(text = stringResource(R.string.admin_titulo)) }
             )
         }
     ) { padding ->
@@ -131,34 +122,18 @@ fun AdminScreen(
     }
 
     if (confirmarLimpieza) {
-        AlertDialog(
-            onDismissRequest = { confirmarLimpieza = false },
-            icon = {
-                Icon(
-                    painter = painterResource(R.drawable.ic_borrar),
-                    contentDescription = null
-                )
+        DialogoConfirmacion(
+            icono = R.drawable.ic_borrar,
+            titulo = stringResource(R.string.admin_limpiar_pregunta),
+            mensaje = stringResource(R.string.admin_limpiar_mensaje),
+            textoConfirmar = stringResource(R.string.admin_limpiar_confirmar),
+            textoCancelar = stringResource(R.string.admin_cancelar),
+            onConfirmar = {
+                confirmarLimpieza = false
+                onLimpiarCache()
             },
-            title = { Text(text = stringResource(R.string.admin_limpiar_pregunta)) },
-            text = { Text(text = stringResource(R.string.admin_limpiar_mensaje)) },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        confirmarLimpieza = false
-                        onLimpiarCache()
-                    }
-                ) {
-                    Text(
-                        text = stringResource(R.string.admin_limpiar_confirmar),
-                        color = MaterialTheme.colorScheme.error
-                    )
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { confirmarLimpieza = false }) {
-                    Text(text = stringResource(R.string.admin_cancelar))
-                }
-            }
+            onCancelar = { confirmarLimpieza = false },
+            destructivo = true
         )
     }
 }
@@ -171,6 +146,8 @@ private fun ContenidoAdmin(
     onSincronizar: () -> Unit,
     onLimpiarCache: () -> Unit
 ) {
+    val interaccionSincronizar = remember { MutableInteractionSource() }
+    val interaccionLimpiar = remember { MutableInteractionSource() }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -254,9 +231,11 @@ private fun ContenidoAdmin(
         Button(
             onClick = onSincronizar,
             enabled = !trabajando,
+            interactionSource = interaccionSincronizar,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(52.dp)
+                .rebote(interaccionSincronizar)
         ) {
             if (trabajando) {
                 CircularProgressIndicator(
@@ -285,9 +264,11 @@ private fun ContenidoAdmin(
             colors = ButtonDefaults.outlinedButtonColors(
                 contentColor = MaterialTheme.colorScheme.error
             ),
+            interactionSource = interaccionLimpiar,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(52.dp)
+                .rebote(interaccionLimpiar)
         ) {
             Icon(
                 painter = painterResource(R.drawable.ic_borrar),
@@ -346,7 +327,6 @@ private fun AdminScreenPreview() {
             ),
             trabajando = false,
             resultado = null,
-            onVolver = {},
             onSincronizar = {},
             onLimpiarCache = {},
             onResultadoMostrado = {}

@@ -14,6 +14,7 @@ import com.tecsup.productos.ui.aMensajeUsuario
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -44,11 +45,13 @@ class DetalleViewModel(
 
     fun cargar() {
         viewModelScope.launch {
-            _estado.value = UiState.Cargando
-            _estado.value = repo.obtenerDetalle(id).fold(
-                onSuccess = { item -> UiState.Exito(item) },
-                onFailure = { error -> UiState.Error(error.aMensajeUsuario(textos)) }
-            )
+            val enCache = repo.items.first().firstOrNull { it.id == id }
+            _estado.value = if (enCache != null) UiState.Exito(enCache) else UiState.Cargando
+            repo.obtenerDetalle(id)
+                .onSuccess { item -> _estado.value = UiState.Exito(item) }
+                .onFailure { error ->
+                    if (enCache == null) _estado.value = UiState.Error(error.aMensajeUsuario(textos))
+                }
         }
     }
 

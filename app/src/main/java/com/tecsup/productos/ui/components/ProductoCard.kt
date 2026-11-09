@@ -1,5 +1,6 @@
 package com.tecsup.productos.ui.components
 
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,6 +13,7 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,7 +32,14 @@ fun ProductoCard(
     onAlternarFavorito: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    ElevatedCard(onClick = onClick, modifier = modifier.fillMaxWidth()) {
+    val interaccion = remember { MutableInteractionSource() }
+    ElevatedCard(
+        onClick = onClick,
+        interactionSource = interaccion,
+        modifier = modifier
+            .fillMaxWidth()
+            .rebote(interaccion)
+    ) {
         Row(
             modifier = Modifier.padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
@@ -39,6 +48,7 @@ fun ProductoCard(
                 url = item.imagenUrl,
                 contentDescription = stringResource(R.string.producto_imagen_descripcion, item.titulo),
                 modifier = Modifier
+                    .elementoCompartido(claveImagenProducto(item.id))
                     .size(88.dp)
                     .clip(MaterialTheme.shapes.medium)
             )
