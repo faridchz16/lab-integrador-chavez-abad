@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="ajustes_titulo">Ajustes</string>
+    <string name="ajustes_titulo">Perfil</string>
+    <string name="perfil_actividad">Mi actividad</string>
+    <string name="perfil_favoritos">Mis favoritos</string>
+    <string name="perfil_pedidos">Mis pedidos</string>
     <string name="ajustes_abrir">Abrir ajustes</string>
     <string name="ajustes_apariencia">Apariencia</string>
     <string name="ajustes_tema">Tema de la aplicación</string>

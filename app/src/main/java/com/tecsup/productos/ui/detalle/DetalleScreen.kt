@@ -1,6 +1,7 @@
 package com.tecsup.productos.ui.detalle
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,22 +11,31 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,6 +45,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tecsup.productos.R
+import com.tecsup.productos.domain.carrito.maximoUnidades
 import com.tecsup.productos.domain.model.Item
 import com.tecsup.productos.ui.UiState
 import com.tecsup.productos.ui.components.BotonFavorito
@@ -43,9 +54,11 @@ import com.tecsup.productos.ui.components.ErrorView
 import com.tecsup.productos.ui.components.EtiquetasProducto
 import com.tecsup.productos.ui.components.claveImagenProducto
 import com.tecsup.productos.ui.components.elementoCompartido
+import com.tecsup.productos.ui.components.rebote
 import com.tecsup.productos.ui.components.ImagenProducto
 import com.tecsup.productos.ui.components.PildoraCategoria
 import com.tecsup.productos.ui.components.PrecioProducto
+import com.tecsup.productos.ui.components.SelectorCantidad
 import com.tecsup.productos.ui.lista.ProductosDePrueba
 import com.tecsup.productos.ui.theme.ProductosTheme
 
@@ -58,10 +71,19 @@ fun DetalleScreen(
     onVolver: () -> Unit,
     onReintentar: () -> Unit,
     onAlternarFavorito: () -> Unit,
+    onAgregarAlCarrito: (Item, Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
         modifier = modifier,
+        bottomBar = {
+            if (estado is UiState.Exito) {
+                BarraAgregarCarrito(
+                    item = estado.datos,
+                    onAgregar = { cantidad -> onAgregarAlCarrito(estado.datos, cantidad) }
+                )
+            }
+        },
         topBar = {
             TopAppBar(
                 title = { Text(text = stringResource(R.string.detalle_titulo)) },
@@ -199,6 +221,53 @@ private fun GaleriaImagenes(item: Item) {
 }
 
 @Composable
+private fun BarraAgregarCarrito(item: Item, onAgregar: (Int) -> Unit) {
+    val maximo = maximoUnidades(item.stock ?: 0, item.unidadesPorPedido)
+    var cantidad by rememberSaveable(item.id) { mutableIntStateOf(1) }
+    val interaccion = remember { MutableInteractionSource() }
+    Surface(tonalElevation = 3.dp, shadowElevation = 8.dp) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .navigationBarsPadding()
+                .padding(horizontal = 16.dp, vertical = 12.dp)
+        ) {
+            if (maximo > 0) {
+                SelectorCantidad(
+                    cantidad = cantidad.coerceAtMost(maximo),
+                    maximo = maximo,
+                    onCambiar = { cantidad = it.coerceIn(1, maximo) }
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+            }
+            Button(
+                onClick = { onAgregar(cantidad.coerceAtMost(maximo)) },
+                enabled = maximo > 0,
+                interactionSource = interaccion,
+                modifier = Modifier
+                    .weight(1f)
+                    .height(52.dp)
+                    .rebote(interaccion)
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_carrito_agregar),
+                    contentDescription = null
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = if (maximo > 0) {
+                        stringResource(R.string.carrito_agregar)
+                    } else {
+                        stringResource(R.string.stock_agotado)
+                    }
+                )
+            }
+        }
+    }
+}
+
+@Composable
 private fun CargandoDetalle(imagen: String?, idProducto: Int) {
     Column(modifier = Modifier.fillMaxSize()) {
         ImagenProducto(
@@ -255,7 +324,8 @@ private fun DetalleScreenPreview() {
             ),
             onVolver = {},
             onReintentar = {},
-            onAlternarFavorito = {}
+            onAlternarFavorito = {},
+            onAgregarAlCarrito = { _, _ -> }
         )
     }
 }
@@ -270,7 +340,8 @@ private fun DetalleScreenErrorPreview() {
             estado = UiState.Error(stringResource(R.string.estado_error_ejemplo)),
             onVolver = {},
             onReintentar = {},
-            onAlternarFavorito = {}
+            onAlternarFavorito = {},
+            onAgregarAlCarrito = { _, _ -> }
         )
     }
 }

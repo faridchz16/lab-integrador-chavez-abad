@@ -62,6 +62,7 @@ data class AccionesCatalogo(
     val onReintentar: () -> Unit,
     val onProductoClick: (Item) -> Unit,
     val onAlternarFavorito: (Int) -> Unit,
+    val onAgregarAlCarrito: (Item) -> Unit,
     val onConsultaChange: (String) -> Unit,
     val onBuscar: (String) -> Unit,
     val onEliminarHistorial: (String) -> Unit,
@@ -160,7 +161,8 @@ fun ListaScreen(
                                 actual.datos.isNotEmpty() -> ListaProductos(
                                     productos = actual.datos,
                                     onProductoClick = acciones.onProductoClick,
-                                    onAlternarFavorito = acciones.onAlternarFavorito
+                                    onAlternarFavorito = acciones.onAlternarFavorito,
+                                    onAgregarAlCarrito = acciones.onAgregarAlCarrito
                                 )
                                 filtro.tieneCriterios -> EstadoVacio(
                                     titulo = stringResource(R.string.sin_resultados_titulo),
@@ -262,7 +264,8 @@ private fun BotonFiltros(cantidadActivos: Int) {
 private fun ListaProductos(
     productos: List<Item>,
     onProductoClick: (Item) -> Unit,
-    onAlternarFavorito: (Int) -> Unit
+    onAlternarFavorito: (Int) -> Unit,
+    onAgregarAlCarrito: (Item) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -274,6 +277,7 @@ private fun ListaProductos(
                 item = item,
                 onClick = { onProductoClick(item) },
                 onAlternarFavorito = { onAlternarFavorito(item.id) },
+                onAgregarAlCarrito = { onAgregarAlCarrito(item) },
                 modifier = Modifier.animateItem()
             )
         }
@@ -284,6 +288,7 @@ private val accionesDePrueba = AccionesCatalogo(
     onReintentar = {},
     onProductoClick = {},
     onAlternarFavorito = {},
+    onAgregarAlCarrito = {},
     onConsultaChange = {},
     onBuscar = {},
     onEliminarHistorial = {},

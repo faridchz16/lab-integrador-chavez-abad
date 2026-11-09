@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="pedidos_titulo">Mis pedidos</string>
+    <string name="pedidos_abrir">Historial de pedidos</string>
+    <string name="pedidos_numero">Pedido #%1$d</string>
+    <string name="pedidos_linea">%1$d × %2$s</string>
+    <string name="pedidos_ver_detalle">Ver detalle del pedido</string>
+    <string name="pedidos_ocultar">Ocultar detalle del pedido</string>
+    <string name="pedidos_vacio_titulo">Aún no tienes pedidos</string>
+    <string name="pedidos_vacio_mensaje">Cuando confirmes un pedido desde el carrito aparecerá aquí.</string>
+    <string name="formato_fecha_pedido">d \'de\' MMMM \'de\' yyyy, HH:mm</string>
+    <plurals name="pedidos_articulos">
+        <item quantity="one">%1$d artículo</item>
+        <item quantity="many">%1$d artículos</item>
+        <item quantity="other">%1$d artículos</item>
+    </plurals>
+</resources>

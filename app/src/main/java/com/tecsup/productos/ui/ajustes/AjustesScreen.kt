@@ -1,5 +1,7 @@
 package com.tecsup.productos.ui.ajustes
 
+import androidx.annotation.DrawableRes
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -12,9 +14,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Badge
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
@@ -27,6 +32,8 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -45,6 +52,9 @@ fun AjustesScreen(
     modoTema: ModoTema,
     onCambiarModoTema: (ModoTema) -> Unit,
     onCerrarSesion: () -> Unit,
+    cantidadFavoritos: Int,
+    onAbrirFavoritos: () -> Unit,
+    onAbrirPedidos: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Scaffold(
@@ -62,6 +72,22 @@ fun AjustesScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(16.dp)
         ) {
+            SeccionAjustes(titulo = stringResource(R.string.perfil_actividad)) {
+                FilaAcceso(
+                    icono = R.drawable.ic_favorito_borde,
+                    titulo = stringResource(R.string.perfil_favoritos),
+                    cantidad = cantidadFavoritos,
+                    onClick = onAbrirFavoritos
+                )
+                FilaAcceso(
+                    icono = R.drawable.ic_recibo,
+                    titulo = stringResource(R.string.perfil_pedidos),
+                    cantidad = 0,
+                    onClick = onAbrirPedidos
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
             SeccionAjustes(titulo = stringResource(R.string.ajustes_apariencia)) {
                 Text(
                     text = stringResource(R.string.ajustes_tema),
@@ -172,6 +198,37 @@ fun AjustesScreen(
 }
 
 @Composable
+private fun FilaAcceso(
+    @DrawableRes icono: Int,
+    titulo: String,
+    cantidad: Int,
+    onClick: () -> Unit
+) {
+    ListItem(
+        headlineContent = { Text(text = titulo) },
+        leadingContent = {
+            Icon(painter = painterResource(icono), contentDescription = null)
+        },
+        trailingContent = {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                if (cantidad > 0) {
+                    Badge { Text(text = cantidad.toString()) }
+                    Spacer(modifier = Modifier.width(8.dp))
+                }
+                Icon(
+                    painter = painterResource(R.drawable.ic_siguiente),
+                    contentDescription = null
+                )
+            }
+        },
+        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+        modifier = Modifier
+            .clip(MaterialTheme.shapes.medium)
+            .clickable(onClick = onClick)
+    )
+}
+
+@Composable
 private fun SeccionAjustes(
     titulo: String,
     contenido: @Composable ColumnScope.() -> Unit
@@ -211,7 +268,10 @@ private fun AjustesScreenPreview() {
             sesion = Sesion(uid = "1", correo = "admin@productos.com", rol = Rol.ADMIN),
             modoTema = ModoTema.SISTEMA,
             onCambiarModoTema = {},
-            onCerrarSesion = {}
+            onCerrarSesion = {},
+            cantidadFavoritos = 3,
+            onAbrirFavoritos = {},
+            onAbrirPedidos = {}
         )
     }
 }

@@ -4,10 +4,15 @@ import android.content.Context
 import androidx.room.Room
 import com.tecsup.productos.data.auth.AuthRepository
 import com.tecsup.productos.data.auth.FirebaseAuthRepository
+import com.tecsup.productos.data.carrito.CarritoRepository
+import com.tecsup.productos.data.carrito.RoomCarritoRepository
 import com.tecsup.productos.data.categorias.CategoriaRepository
 import com.tecsup.productos.data.categorias.RoomCategoriaRepository
 import com.tecsup.productos.data.local.AppDatabase
 import com.tecsup.productos.data.local.MIGRACION_2_3
+import com.tecsup.productos.data.local.MIGRACION_3_4
+import com.tecsup.productos.data.pedidos.PedidoRepository
+import com.tecsup.productos.data.pedidos.RoomPedidoRepository
 import com.tecsup.productos.data.preferencias.DataStorePreferenciasRepository
 import com.tecsup.productos.data.preferencias.PreferenciasRepository
 import com.tecsup.productos.data.recursos.ProveedorTextos
@@ -29,7 +34,7 @@ class AppContainer(private val context: Context) {
 
     private val database: AppDatabase by lazy {
         Room.databaseBuilder(context, AppDatabase::class.java, "productos.db")
-            .addMigrations(MIGRACION_2_3)
+            .addMigrations(MIGRACION_2_3, MIGRACION_3_4)
             .fallbackToDestructiveMigration(dropAllTables = true)
             .build()
     }
@@ -45,6 +50,14 @@ class AppContainer(private val context: Context) {
 
     val categoriaRepository: CategoriaRepository by lazy {
         RoomCategoriaRepository(database.categoriaDao())
+    }
+
+    val carritoRepository: CarritoRepository by lazy {
+        RoomCarritoRepository(database.carritoDao(), database.itemDao())
+    }
+
+    val pedidoRepository: PedidoRepository by lazy {
+        RoomPedidoRepository(database)
     }
 
     val notificador: Notificador by lazy {

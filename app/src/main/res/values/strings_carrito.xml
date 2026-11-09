@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="carrito_titulo">Mi carrito</string>
+    <string name="carrito_agregar">Agregar al carrito</string>
+    <string name="carrito_ver">Ver carrito</string>
+    <string name="carrito_aumentar">Aumentar cantidad</string>
+    <string name="carrito_disminuir">Disminuir cantidad</string>
+    <string name="carrito_quitar">Quitar %1$s del carrito</string>
+    <string name="carrito_agregado">Se agregó «%1$s» al carrito</string>
+    <plurals name="carrito_limite_stock">
+        <item quantity="one">Solo hay %1$d unidad disponible de «%2$s»</item>
+        <item quantity="many">Solo hay %1$d unidades disponibles de «%2$s»</item>
+        <item quantity="other">Solo hay %1$d unidades disponibles de «%2$s»</item>
+    </plurals>
+    <plurals name="carrito_maximo_disponible">
+        <item quantity="one">Máximo disponible: %1$d unidad</item>
+        <item quantity="many">Máximo disponible: %1$d unidades</item>
+        <item quantity="other">Máximo disponible: %1$d unidades</item>
+    </plurals>
+    <string name="carrito_agotado">«%1$s» está agotado</string>
+    <string name="carrito_no_disponible">Este producto ya no está disponible</string>
+    <string name="carrito_vacio_titulo">Tu carrito está vacío</string>
+    <string name="carrito_vacio_mensaje">Agrega productos desde el catálogo para armar tu pedido.</string>
+    <string name="carrito_ir_catalogo">Ir al catálogo</string>
+    <plurals name="carrito_subtotal">
+        <item quantity="one">Subtotal (%1$d artículo)</item>
+        <item quantity="many">Subtotal (%1$d artículos)</item>
+        <item quantity="other">Subtotal (%1$d artículos)</item>
+    </plurals>
+    <string name="carrito_descuentos">Descuentos</string>
+    <string name="carrito_descuento_valor">-%1$s</string>
+    <string name="carrito_total">Total</string>
+    <string name="carrito_vaciar">Vaciar</string>
+    <string name="carrito_confirmar_pedido">Confirmar pedido</string>
+    <string name="carrito_confirmar_pregunta">¿Confirmar pedido?</string>
+    <string name="carrito_confirmar_mensaje">Se registrará tu pedido por %1$s y las unidades se descontarán del inventario.</string>
+    <string name="carrito_confirmar">Confirmar</string>
+    <string name="carrito_cancelar">Cancelar</string>
+    <string name="carrito_vaciar_pregunta">¿Vaciar carrito?</string>
+    <string name="carrito_vaciar_mensaje">Se quitarán todos los productos de tu carrito.</string>
+    <string name="carrito_pedido_exito_titulo">¡Pedido confirmado!</string>
+    <string name="carrito_pedido_exito_mensaje">Tu pedido #%1$d por %2$s se registró correctamente.</string>
+    <string name="carrito_ver_pedidos">Ver mis pedidos</string>
+    <string name="carrito_seguir_comprando">Seguir comprando</string>
+    <string name="carrito_error_vacio">Tu carrito está vacío</string>
+    <string name="carrito_error_stock">No hay stock suficiente de «%1$s». Disponible: %2$d</string>
+</resources>

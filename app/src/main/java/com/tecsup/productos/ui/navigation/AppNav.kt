@@ -14,6 +14,10 @@ import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -26,6 +30,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -41,6 +46,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.tecsup.productos.AppContainer
+import com.tecsup.productos.R
 import com.tecsup.productos.domain.model.ModoTema
 import com.tecsup.productos.domain.model.Rol
 import com.tecsup.productos.domain.model.Sesion
@@ -49,6 +55,8 @@ import com.tecsup.productos.ui.admin.AdminScreen
 import com.tecsup.productos.ui.admin.AdminViewModel
 import com.tecsup.productos.ui.ajustes.AjustesScreen
 import com.tecsup.productos.ui.ajustes.AjustesViewModel
+import com.tecsup.productos.ui.carrito.CarritoScreen
+import com.tecsup.productos.ui.carrito.CarritoViewModel
 import com.tecsup.productos.ui.categorias.CategoriasScreen
 import com.tecsup.productos.ui.categorias.CategoriasViewModel
 import com.tecsup.productos.ui.components.DialogoCerrarSesion
@@ -65,6 +73,9 @@ import com.tecsup.productos.ui.lista.ListaScreen
 import com.tecsup.productos.ui.lista.ListaViewModel
 import com.tecsup.productos.ui.login.LoginScreen
 import com.tecsup.productos.ui.login.LoginViewModel
+import com.tecsup.productos.ui.pedidos.PedidosScreen
+import com.tecsup.productos.ui.pedidos.PedidosViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun AppNav(
@@ -122,9 +133,33 @@ private fun NavegacionPrincipal(
     )
     val cantidadFavoritos by insigniasViewModel.favoritos.collectAsStateWithLifecycle()
 
+    val carritoViewModel: CarritoViewModel = viewModel(
+        factory = CarritoViewModel.factory(container)
+    )
+    val cantidadCarrito by carritoViewModel.cantidadArticulos.collectAsStateWithLifecycle()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val textoVerCarrito = stringResource(R.string.carrito_ver)
+
+    LaunchedEffect(carritoViewModel) {
+        carritoViewModel.avisos.collect { aviso ->
+            launch {
+                snackbarHostState.currentSnackbarData?.dismiss()
+                val resultado = snackbarHostState.showSnackbar(
+                    message = aviso.texto,
+                    actionLabel = if (aviso.mostrarAccion) textoVerCarrito else null,
+                    duration = SnackbarDuration.Short
+                )
+                if (resultado == SnackbarResult.ActionPerformed) {
+                    navController.irAPestana(DestinoPrincipal.CARRITO)
+                }
+            }
+        }
+    }
+
     Scaffold(
         modifier = modifier,
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         bottomBar = {
             AnimatedVisibility(
                 visible = mostrarBarra,
@@ -134,7 +169,7 @@ private fun NavegacionPrincipal(
                 BarraNavegacion(
                     destinos = destinosVisibles,
                     destinoActual = destinoActual,
-                    insignias = mapOf(DestinoPrincipal.FAVORITOS to cantidadFavoritos),
+                    insignias = mapOf(DestinoPrincipal.CARRITO to cantidadCarrito),
                     onSeleccionar = { destino -> navController.irAPestana(destino) }
                 )
             }
@@ -195,6 +230,7 @@ private fun NavegacionPrincipal(
                                     navController.navigate(Rutas.Detalle(item.id, item.imagenUrl))
                                 },
                                 onAlternarFavorito = viewModel::alternarFavorito,
+                                onAgregarAlCarrito = { item -> carritoViewModel.agregar(item) },
                                 onConsultaChange = viewModel::cambiarConsulta,
                                 onBuscar = viewModel::confirmarBusqueda,
                                 onEliminarHistorial = viewModel::eliminarDelHistorial,
@@ -250,7 +286,10 @@ private fun NavegacionPrincipal(
                             idProducto = ruta.id,
                             onVolver = { navController.navigateUp() },
                             onReintentar = viewModel::cargar,
-                            onAlternarFavorito = viewModel::alternarFavorito
+                            onAlternarFavorito = viewModel::alternarFavorito,
+                            onAgregarAlCarrito = { item, cantidad ->
+                                carritoViewModel.agregar(item, cantidad)
+                            }
                         )
                     }
                     pantalla<Rutas.Favoritos> {
@@ -264,7 +303,41 @@ private fun NavegacionPrincipal(
                             onProductoClick = { item ->
                                 navController.navigate(Rutas.Detalle(item.id, item.imagenUrl))
                             },
-                            onAlternarFavorito = viewModel::alternarFavorito
+                            onAlternarFavorito = viewModel::alternarFavorito,
+                            onAgregarAlCarrito = { item -> carritoViewModel.agregar(item) },
+                            onVolver = { navController.navigateUp() }
+                        )
+                    }
+                    pantalla<Rutas.Carrito> {
+                        val estado by carritoViewModel.estado.collectAsStateWithLifecycle()
+                        val procesando by carritoViewModel.procesando.collectAsStateWithLifecycle()
+                        val pedidoConfirmado by carritoViewModel.pedidoConfirmado
+                            .collectAsStateWithLifecycle()
+                        CarritoScreen(
+                            estado = estado,
+                            procesando = procesando,
+                            pedidoConfirmado = pedidoConfirmado,
+                            onCambiarCantidad = carritoViewModel::cambiarCantidad,
+                            onQuitar = carritoViewModel::quitar,
+                            onVaciar = carritoViewModel::vaciar,
+                            onConfirmar = {
+                                carritoViewModel.confirmarPedido(sesionVigente?.correo.orEmpty())
+                            },
+                            onPedidoMostrado = carritoViewModel::pedidoMostrado,
+                            onVerPedidos = { navController.navigate(Rutas.Pedidos) },
+                            onIrCatalogo = { navController.irAPestana(DestinoPrincipal.CATALOGO) },
+                            onReintentar = carritoViewModel::recargar
+                        )
+                    }
+                    pantalla<Rutas.Pedidos> {
+                        val viewModel: PedidosViewModel = viewModel(
+                            factory = PedidosViewModel.factory(container)
+                        )
+                        val estado by viewModel.estado.collectAsStateWithLifecycle()
+                        PedidosScreen(
+                            estado = estado,
+                            onReintentar = viewModel::recargar,
+                            onVolver = { navController.navigateUp() }
                         )
                     }
                     pantalla<Rutas.Admin> {
@@ -298,7 +371,10 @@ private fun NavegacionPrincipal(
                             sesion = sesionVigente,
                             modoTema = modoTema ?: ModoTema.SISTEMA,
                             onCambiarModoTema = viewModel::cambiarModoTema,
-                            onCerrarSesion = { mostrarDialogoSalir = true }
+                            onCerrarSesion = { mostrarDialogoSalir = true },
+                            cantidadFavoritos = cantidadFavoritos,
+                            onAbrirFavoritos = { navController.navigate(Rutas.Favoritos) },
+                            onAbrirPedidos = { navController.navigate(Rutas.Pedidos) }
                         )
                     }
                 }

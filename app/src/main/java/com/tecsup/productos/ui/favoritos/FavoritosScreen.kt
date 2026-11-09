@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
@@ -20,6 +22,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -41,7 +44,9 @@ fun FavoritosScreen(
     onReintentar: () -> Unit,
     onProductoClick: (Item) -> Unit,
     onAlternarFavorito: (Int) -> Unit,
-    modifier: Modifier = Modifier
+    onAgregarAlCarrito: (Item) -> Unit,
+    modifier: Modifier = Modifier,
+    onVolver: (() -> Unit)? = null
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val alcance = rememberCoroutineScope()
@@ -68,7 +73,17 @@ fun FavoritosScreen(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             TopAppBar(
-                title = { Text(text = stringResource(R.string.favoritos_titulo)) }
+                title = { Text(text = stringResource(R.string.favoritos_titulo)) },
+                navigationIcon = {
+                    if (onVolver != null) {
+                        IconButton(onClick = onVolver) {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_volver),
+                                contentDescription = stringResource(R.string.detalle_volver)
+                            )
+                        }
+                    }
+                }
             )
         }
     ) { padding ->
@@ -91,13 +106,15 @@ fun FavoritosScreen(
                     is UiState.Exito -> if (actual.datos.isEmpty()) {
                         EstadoVacio(
                             titulo = stringResource(R.string.favoritos_vacio_titulo),
-                            mensaje = stringResource(R.string.favoritos_vacio_mensaje)
+                            mensaje = stringResource(R.string.favoritos_vacio_mensaje),
+                            icono = R.drawable.ic_favorito_borde
                         )
                     } else {
                         ListaFavoritos(
                             productos = actual.datos,
                             onProductoClick = onProductoClick,
-                            onQuitar = quitarConDeshacer
+                            onQuitar = quitarConDeshacer,
+                            onAgregarAlCarrito = onAgregarAlCarrito
                         )
                     }
                 }
@@ -110,7 +127,8 @@ fun FavoritosScreen(
 private fun ListaFavoritos(
     productos: List<Item>,
     onProductoClick: (Item) -> Unit,
-    onQuitar: (Int) -> Unit
+    onQuitar: (Int) -> Unit,
+    onAgregarAlCarrito: (Item) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -122,6 +140,7 @@ private fun ListaFavoritos(
                 item = item,
                 onClick = { onProductoClick(item) },
                 onAlternarFavorito = { onQuitar(item.id) },
+                onAgregarAlCarrito = { onAgregarAlCarrito(item) },
                 modifier = Modifier.animateItem()
             )
         }
@@ -138,7 +157,8 @@ private fun FavoritosScreenPreview() {
             ),
             onReintentar = {},
             onProductoClick = {},
-            onAlternarFavorito = {}
+            onAlternarFavorito = {},
+            onAgregarAlCarrito = {}
         )
     }
 }
@@ -151,7 +171,8 @@ private fun FavoritosScreenVacioPreview() {
             estado = UiState.Exito(emptyList()),
             onReintentar = {},
             onProductoClick = {},
-            onAlternarFavorito = {}
+            onAlternarFavorito = {},
+            onAgregarAlCarrito = {}
         )
     }
 }

@@ -6,10 +6,16 @@ import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavDestination.Companion.hasRoute
 
 fun AnimatedContentTransitionScope<NavBackStackEntry>.entradaNavegacion(): EnterTransition {
+    if (targetState.destination.hasRoute(Rutas.Carrito::class)) {
+        return scaleIn(tween(DURACION_TRANSICION_MS), initialScale = ESCALA_CARRITO) +
+            fadeIn(tween(DURACION_TRANSICION_MS))
+    }
     val desde = initialState.indicePestana()
     val hacia = targetState.indicePestana()
     return if (desde != null && hacia != null) {
@@ -21,6 +27,10 @@ fun AnimatedContentTransitionScope<NavBackStackEntry>.entradaNavegacion(): Enter
 }
 
 fun AnimatedContentTransitionScope<NavBackStackEntry>.salidaNavegacion(): ExitTransition {
+    if (initialState.destination.hasRoute(Rutas.Carrito::class)) {
+        return scaleOut(tween(DURACION_TRANSICION_MS), targetScale = ESCALA_CARRITO) +
+            fadeOut(tween(DURACION_TRANSICION_MS))
+    }
     val desde = initialState.indicePestana()
     val hacia = targetState.indicePestana()
     return if (desde != null && hacia != null) {
@@ -43,3 +53,4 @@ private fun direccion(desde: Int, hacia: Int) = if (hacia > desde) {
 }
 
 private const val DURACION_TRANSICION_MS = 350
+private const val ESCALA_CARRITO = 0.92f

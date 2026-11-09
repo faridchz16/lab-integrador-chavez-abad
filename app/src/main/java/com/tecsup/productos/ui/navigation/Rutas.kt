@@ -19,6 +19,12 @@ sealed interface Rutas {
     data object Favoritos : Rutas
 
     @Serializable
+    data object Carrito : Rutas
+
+    @Serializable
+    data object Pedidos : Rutas
+
+    @Serializable
     data object Admin : Rutas
 
     @Serializable

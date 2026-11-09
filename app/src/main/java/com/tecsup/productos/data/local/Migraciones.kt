@@ -19,3 +19,39 @@ val MIGRACION_2_3 = object : Migration(2, 3) {
         )
     }
 }
+
+val MIGRACION_3_4 = object : Migration(3, 4) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            "CREATE TABLE IF NOT EXISTS carrito (" +
+                "productoId INTEGER NOT NULL, " +
+                "cantidad INTEGER NOT NULL, " +
+                "agregadoEn INTEGER NOT NULL, " +
+                "PRIMARY KEY(productoId), " +
+                "FOREIGN KEY(productoId) REFERENCES items(id) ON UPDATE NO ACTION ON DELETE CASCADE)"
+        )
+        db.execSQL(
+            "CREATE TABLE IF NOT EXISTS pedidos (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                "fecha INTEGER NOT NULL, " +
+                "total REAL NOT NULL, " +
+                "cantidadArticulos INTEGER NOT NULL, " +
+                "correoUsuario TEXT NOT NULL)"
+        )
+        db.execSQL(
+            "CREATE TABLE IF NOT EXISTS detalles_pedido (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
+                "pedidoId INTEGER NOT NULL, " +
+                "productoId INTEGER NOT NULL, " +
+                "titulo TEXT NOT NULL, " +
+                "imagenUrl TEXT, " +
+                "precioUnitario REAL NOT NULL, " +
+                "cantidad INTEGER NOT NULL, " +
+                "unidadesDescontadas INTEGER NOT NULL, " +
+                "FOREIGN KEY(pedidoId) REFERENCES pedidos(id) ON UPDATE NO ACTION ON DELETE CASCADE)"
+        )
+        db.execSQL(
+            "CREATE INDEX IF NOT EXISTS index_detalles_pedido_pedidoId ON detalles_pedido (pedidoId)"
+        )
+    }
+}

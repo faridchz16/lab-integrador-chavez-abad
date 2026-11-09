@@ -23,7 +23,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.tecsup.productos.R
+import com.tecsup.productos.domain.model.EstadoStock
 import com.tecsup.productos.domain.model.Item
+import com.tecsup.productos.domain.model.estadoStock
 import com.tecsup.productos.ui.theme.ProductosTheme
 
 @Composable
@@ -31,7 +33,8 @@ fun ProductoCard(
     item: Item,
     onClick: () -> Unit,
     onAlternarFavorito: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onAgregarAlCarrito: (() -> Unit)? = null
 ) {
     val interaccion = remember { MutableInteractionSource() }
     ElevatedCard(
@@ -88,7 +91,15 @@ fun ProductoCard(
                 Spacer(modifier = Modifier.height(6.dp))
                 EtiquetasProducto(item = item)
             }
-            BotonFavorito(esFavorito = item.esFavorito, onClick = onAlternarFavorito)
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                BotonFavorito(esFavorito = item.esFavorito, onClick = onAlternarFavorito)
+                if (onAgregarAlCarrito != null) {
+                    BotonAgregarCarrito(
+                        onClick = onAgregarAlCarrito,
+                        habilitado = item.estadoStock() != EstadoStock.AGOTADO
+                    )
+                }
+            }
         }
     }
 }

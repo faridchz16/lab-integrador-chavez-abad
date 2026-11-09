@@ -1,8 +1,15 @@
 package com.tecsup.productos.data.mapper
 
 import com.tecsup.productos.data.local.CategoriaConConteo
+import com.tecsup.productos.data.local.DetallePedidoEntity
 import com.tecsup.productos.data.local.ItemEntity
+import com.tecsup.productos.data.local.LineaCarritoEntity
+import com.tecsup.productos.data.local.PedidoConDetalles
+import com.tecsup.productos.data.local.PedidoEntity
 import com.tecsup.productos.data.remote.dto.ItemDto
+import com.tecsup.productos.domain.carrito.LineaCarrito
+import com.tecsup.productos.domain.carrito.LineaPedido
+import com.tecsup.productos.domain.carrito.Pedido
 import com.tecsup.productos.domain.model.Categoria
 import com.tecsup.productos.domain.model.Item
 
@@ -89,3 +96,32 @@ fun CategoriaConConteo.aModelo(): Categoria = Categoria(
     nombre = nombre,
     cantidadProductos = cantidad
 )
+
+fun LineaCarritoEntity.aModelo(): LineaCarrito = LineaCarrito(
+    productoId = productoId,
+    titulo = titulo,
+    imagenUrl = imagenUrl,
+    precioOriginal = precio,
+    precioUnitario = if (descuento > 0) precio * (1 - descuento / 100) else precio,
+    cantidad = cantidad,
+    stockDisponible = stock,
+    unidadesPorPedido = unidadesPorPedido
+)
+
+fun DetallePedidoEntity.aModelo(): LineaPedido = LineaPedido(
+    productoId = productoId,
+    titulo = titulo,
+    imagenUrl = imagenUrl,
+    precioUnitario = precioUnitario,
+    cantidad = cantidad
+)
+
+fun PedidoEntity.aModelo(detalles: List<DetallePedidoEntity>): Pedido = Pedido(
+    id = id,
+    fecha = fecha,
+    total = total,
+    cantidadArticulos = cantidadArticulos,
+    lineas = detalles.map { it.aModelo() }
+)
+
+fun PedidoConDetalles.aModelo(): Pedido = pedido.aModelo(detalles)

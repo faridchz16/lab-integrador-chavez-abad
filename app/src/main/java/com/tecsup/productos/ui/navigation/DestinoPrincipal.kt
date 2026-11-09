@@ -23,11 +23,11 @@ enum class DestinoPrincipal(
         iconoActivo = R.drawable.ic_categoria,
         iconoInactivo = R.drawable.ic_categoria_borde
     ),
-    FAVORITOS(
-        ruta = Rutas.Favoritos,
-        etiqueta = R.string.navegacion_favoritos,
-        iconoActivo = R.drawable.ic_favorito,
-        iconoInactivo = R.drawable.ic_favorito_borde
+    CARRITO(
+        ruta = Rutas.Carrito,
+        etiqueta = R.string.navegacion_carrito,
+        iconoActivo = R.drawable.ic_carrito,
+        iconoInactivo = R.drawable.ic_carrito_borde
     ),
     ADMIN(
         ruta = Rutas.Admin,
@@ -38,8 +38,8 @@ enum class DestinoPrincipal(
     ),
     AJUSTES(
         ruta = Rutas.Ajustes,
-        etiqueta = R.string.navegacion_ajustes,
-        iconoActivo = R.drawable.ic_ajustes,
-        iconoInactivo = R.drawable.ic_ajustes_borde
+        etiqueta = R.string.navegacion_perfil,
+        iconoActivo = R.drawable.ic_persona,
+        iconoInactivo = R.drawable.ic_persona_borde
     )
 }
