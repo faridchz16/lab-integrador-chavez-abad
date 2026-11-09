@@ -10,6 +10,7 @@ import java.util.Calendar
 
 data class ResumenAdmin(
     val totalGuardado: Int,
+    val totalFavoritos: Int,
     val valorInventario: Double,
     val stockBajo: Int,
     val agotados: Int
@@ -65,6 +66,7 @@ fun construirPanel(
     return PanelAdmin(
         resumen = ResumenAdmin(
             totalGuardado = items.size,
+            totalFavoritos = items.count { it.esFavorito },
             valorInventario = items.sumOf { it.precioFinal() * (it.stock ?: 0).coerceAtLeast(0) },
             stockBajo = items.count { it.tieneStockBajo() },
             agotados = estados.count { it == EstadoStock.AGOTADO }

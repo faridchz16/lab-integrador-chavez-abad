@@ -5,6 +5,7 @@
     <string name="admin_sesion">Sesión de administrador</string>
     <string name="admin_resumen">Resumen</string>
     <string name="admin_total_guardado">Productos guardados</string>
+    <string name="admin_total_favoritos">Favoritos de clientes</string>
     <string name="admin_valor_inventario">Valor del inventario</string>
     <string name="admin_stock_bajo">Con stock bajo</string>
     <string name="admin_agotados">Agotados</string>

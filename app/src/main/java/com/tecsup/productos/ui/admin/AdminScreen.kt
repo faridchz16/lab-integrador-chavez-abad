@@ -226,10 +226,10 @@ private fun ContenidoAdmin(
                 modifier = Modifier.weight(1f)
             )
             TarjetaEstadistica(
-                icono = R.drawable.ic_grafico,
-                valor = stringResource(R.string.producto_precio, resumen.valorInventario),
-                etiqueta = stringResource(R.string.admin_valor_inventario),
-                acento = MaterialTheme.coloresStock.sobreMaximo.acento,
+                icono = R.drawable.ic_favorito,
+                valor = resumen.totalFavoritos.toString(),
+                etiqueta = stringResource(R.string.admin_total_favoritos),
+                acento = MaterialTheme.colorScheme.secondary,
                 modifier = Modifier.weight(1f)
             )
         }
@@ -250,6 +250,14 @@ private fun ContenidoAdmin(
                 modifier = Modifier.weight(1f)
             )
         }
+        Spacer(modifier = Modifier.height(12.dp))
+        TarjetaEstadistica(
+            icono = R.drawable.ic_grafico,
+            valor = stringResource(R.string.producto_precio, resumen.valorInventario),
+            etiqueta = stringResource(R.string.admin_valor_inventario),
+            acento = MaterialTheme.coloresStock.sobreMaximo.acento,
+            modifier = Modifier.fillMaxWidth()
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
         TarjetaEstadoInventario(distribucion = panel.distribucion)

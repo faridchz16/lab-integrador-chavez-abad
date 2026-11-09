@@ -22,13 +22,14 @@ class PanelAdminTest {
         lineas = emptyList()
     )
 
-    private fun producto(id: Int, stock: Int, precio: Double = 100.0) = Item(
+    private fun producto(id: Int, stock: Int, precio: Double = 100.0, favorito: Boolean = false) = Item(
         id = id,
         titulo = "Producto $id",
         marca = "Marca",
         precio = precio,
         imagenUrl = null,
-        stock = stock
+        stock = stock,
+        esFavorito = favorito
     )
 
     private val ahora = momento(dia = 8, hora = 18)
@@ -74,7 +75,7 @@ class PanelAdminTest {
                 producto(1, stock = 0),
                 producto(2, stock = 5),
                 producto(3, stock = 12),
-                producto(4, stock = 40),
+                producto(4, stock = 40, favorito = true),
                 producto(5, stock = 100)
             ),
             pedidos = emptyList(),
@@ -88,6 +89,7 @@ class PanelAdminTest {
             assertEquals(1, sobreMaximo)
         }
         assertEquals(1, panel.resumen.agotados)
+        assertEquals(1, panel.resumen.totalFavoritos)
         assertEquals(15_700.0, panel.resumen.valorInventario, 0.001)
         assertEquals(listOf(1, 2, 3, 4, 5), panel.menorStock.map { it.id })
     }
