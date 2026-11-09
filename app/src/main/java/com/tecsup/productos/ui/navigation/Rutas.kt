@@ -17,4 +17,7 @@ sealed interface Rutas {
 
     @Serializable
     data object Admin : Rutas
+
+    @Serializable
+    data object Ajustes : Rutas
 }

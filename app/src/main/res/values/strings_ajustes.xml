@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ajustes_titulo">Ajustes</string>
+    <string name="ajustes_abrir">Abrir ajustes</string>
+    <string name="ajustes_apariencia">Apariencia</string>
+    <string name="ajustes_tema">Tema de la aplicación</string>
+    <string name="ajustes_tema_claro">Claro</string>
+    <string name="ajustes_tema_oscuro">Oscuro</string>
+    <string name="ajustes_tema_sistema">Sistema</string>
+    <string name="ajustes_tema_ayuda">«Sistema» usa el modo claro u oscuro configurado en tu celular.</string>
+    <string name="ajustes_cuenta">Cuenta</string>
+    <string name="ajustes_rol_admin">Administrador</string>
+    <string name="ajustes_rol_usuario">Usuario</string>
+    <string name="ajustes_acerca">Acerca de</string>
+    <string name="ajustes_version">Versión 1.0</string>
+    <string name="ajustes_descripcion_app">Stockify te ayuda a consultar el catálogo y controlar el inventario de productos, incluso sin conexión.</string>
+</resources>

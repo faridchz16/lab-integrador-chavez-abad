@@ -1,58 +1,101 @@
 package com.tecsup.productos.ui.theme
 
-import android.app.Activity
-import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.CompositionLocalProvider
 
-private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+private val EsquemaClaro = lightColorScheme(
+    primary = PrimarioClaro,
+    onPrimary = SobrePrimarioClaro,
+    primaryContainer = ContenedorPrimarioClaro,
+    onPrimaryContainer = SobreContenedorPrimarioClaro,
+    inversePrimary = PrimarioInversoClaro,
+    secondary = SecundarioClaro,
+    onSecondary = SobreSecundarioClaro,
+    secondaryContainer = ContenedorSecundarioClaro,
+    onSecondaryContainer = SobreContenedorSecundarioClaro,
+    tertiary = TerciarioClaro,
+    onTertiary = SobreTerciarioClaro,
+    tertiaryContainer = ContenedorTerciarioClaro,
+    onTertiaryContainer = SobreContenedorTerciarioClaro,
+    background = FondoClaro,
+    onBackground = SobreFondoClaro,
+    surface = FondoClaro,
+    onSurface = SobreFondoClaro,
+    surfaceVariant = VarianteSuperficieClaro,
+    onSurfaceVariant = SobreVarianteSuperficieClaro,
+    surfaceTint = PrimarioClaro,
+    inverseSurface = SuperficieInversaClaro,
+    inverseOnSurface = SobreSuperficieInversaClaro,
+    error = ErrorClaro,
+    onError = SobreErrorClaro,
+    errorContainer = ContenedorErrorClaro,
+    onErrorContainer = SobreContenedorErrorClaro,
+    outline = ContornoClaro,
+    outlineVariant = VarianteContornoClaro,
+    surfaceBright = SuperficieBrillanteClaro,
+    surfaceDim = SuperficieTenueClaro,
+    surfaceContainerLowest = ContenedorMinimoClaro,
+    surfaceContainerLow = ContenedorBajoClaro,
+    surfaceContainer = ContenedorClaro,
+    surfaceContainerHigh = ContenedorAltoClaro,
+    surfaceContainerHighest = ContenedorMaximoClaro
 )
 
-private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+private val EsquemaOscuro = darkColorScheme(
+    primary = PrimarioOscuro,
+    onPrimary = SobrePrimarioOscuro,
+    primaryContainer = ContenedorPrimarioOscuro,
+    onPrimaryContainer = SobreContenedorPrimarioOscuro,
+    inversePrimary = PrimarioInversoOscuro,
+    secondary = SecundarioOscuro,
+    onSecondary = SobreSecundarioOscuro,
+    secondaryContainer = ContenedorSecundarioOscuro,
+    onSecondaryContainer = SobreContenedorSecundarioOscuro,
+    tertiary = TerciarioOscuro,
+    onTertiary = SobreTerciarioOscuro,
+    tertiaryContainer = ContenedorTerciarioOscuro,
+    onTertiaryContainer = SobreContenedorTerciarioOscuro,
+    background = FondoOscuro,
+    onBackground = SobreFondoOscuro,
+    surface = FondoOscuro,
+    onSurface = SobreFondoOscuro,
+    surfaceVariant = VarianteSuperficieOscuro,
+    onSurfaceVariant = SobreVarianteSuperficieOscuro,
+    surfaceTint = PrimarioOscuro,
+    inverseSurface = SuperficieInversaOscuro,
+    inverseOnSurface = SobreSuperficieInversaOscuro,
+    error = ErrorOscuro,
+    onError = SobreErrorOscuro,
+    errorContainer = ContenedorErrorOscuro,
+    onErrorContainer = SobreContenedorErrorOscuro,
+    outline = ContornoOscuro,
+    outlineVariant = VarianteContornoOscuro,
+    surfaceBright = SuperficieBrillanteOscuro,
+    surfaceDim = SuperficieTenueOscuro,
+    surfaceContainerLowest = ContenedorMinimoOscuro,
+    surfaceContainerLow = ContenedorBajoOscuro,
+    surfaceContainer = ContenedorOscuro,
+    surfaceContainerHigh = ContenedorAltoOscuro,
+    surfaceContainerHighest = ContenedorMaximoOscuro
 )
 
 @Composable
 fun ProductosTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+    CompositionLocalProvider(
+        LocalColoresStock provides if (darkTheme) ColoresStockOscuro else ColoresStockClaro
+    ) {
+        MaterialTheme(
+            colorScheme = if (darkTheme) EsquemaOscuro else EsquemaClaro,
+            typography = Typography,
+            shapes = FormasStockify,
+            content = content
+        )
     }
-
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
-        content = content
-    )
 }

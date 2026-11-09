@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.tecsup.productos.AppContainer
+import com.tecsup.productos.data.recursos.ProveedorTextos
 import com.tecsup.productos.data.repository.ItemRepository
 import com.tecsup.productos.domain.model.Item
 import com.tecsup.productos.ui.UiState
@@ -23,7 +24,8 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class FavoritosViewModel(
-    private val repo: ItemRepository
+    private val repo: ItemRepository,
+    private val textos: ProveedorTextos
 ) : ViewModel() {
 
     private val recarga = MutableStateFlow(0)
@@ -33,7 +35,7 @@ class FavoritosViewModel(
             repo.favoritos
                 .map<List<Item>, UiState<List<Item>>> { lista -> UiState.Exito(lista) }
                 .onStart { emit(UiState.Cargando) }
-                .catch { error -> emit(UiState.Error(error.aMensajeUsuario())) }
+                .catch { error -> emit(UiState.Error(error.aMensajeUsuario(textos))) }
         }
         .stateIn(
             scope = viewModelScope,
@@ -53,7 +55,7 @@ class FavoritosViewModel(
         private const val TIEMPO_ESPERA_MS = 5_000L
 
         fun factory(container: AppContainer): ViewModelProvider.Factory = viewModelFactory {
-            initializer { FavoritosViewModel(container.itemRepository) }
+            initializer { FavoritosViewModel(container.itemRepository, container.textos) }
         }
     }
 }

@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.tecsup.productos.AppContainer
+import com.tecsup.productos.R
+import com.tecsup.productos.data.recursos.ProveedorTextos
 import com.tecsup.productos.data.repository.ItemRepository
 import com.tecsup.productos.domain.model.Item
 import com.tecsup.productos.notification.Notificador
@@ -19,7 +21,8 @@ import kotlinx.coroutines.launch
 
 class ListaViewModel(
     private val repo: ItemRepository,
-    private val notificador: Notificador
+    private val notificador: Notificador,
+    private val textos: ProveedorTextos
 ) : ViewModel() {
 
     private val _estado = MutableStateFlow<UiState<List<Item>>>(UiState.Cargando)
@@ -50,19 +53,19 @@ class ListaViewModel(
                 .onSuccess { n ->
                     if (_estado.value is UiState.Cargando) _estado.value = UiState.Exito(emptyList())
                     _aviso.value = null
-
-                    notificador.mostrar("Datos actualizados", "Se guardaron $n elementos")
+                    notificador.mostrar(
+                        textos.texto(R.string.notificacion_titulo),
+                        textos.plural(R.plurals.notificacion_guardados, n, n)
+                    )
                 }
                 .onFailure { e ->
                     if (repo.cantidadGuardada() == 0) {
-
-                        _estado.value = UiState.Error(e.aMensajeUsuario())
+                        _estado.value = UiState.Error(e.aMensajeUsuario(textos))
                     } else {
-
                         if (_estado.value !is UiState.Exito) {
                             _estado.value = UiState.Exito(repo.items.first())
                         }
-                        _aviso.value = "Sin conexión: mostrando datos guardados"
+                        _aviso.value = textos.texto(R.string.lista_aviso_sin_conexion)
                     }
                 }
         }
@@ -74,7 +77,9 @@ class ListaViewModel(
 
     companion object {
         fun factory(container: AppContainer): ViewModelProvider.Factory = viewModelFactory {
-            initializer { ListaViewModel(container.itemRepository, container.notificador) }
+            initializer {
+                ListaViewModel(container.itemRepository, container.notificador, container.textos)
+            }
         }
     }
 }

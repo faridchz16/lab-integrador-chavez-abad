@@ -6,6 +6,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.tecsup.productos.AppContainer
+import com.tecsup.productos.R
+import com.tecsup.productos.data.recursos.ProveedorTextos
 import com.tecsup.productos.data.repository.ItemRepository
 import com.tecsup.productos.domain.model.EstadoStock
 import com.tecsup.productos.domain.model.Item
@@ -38,12 +40,13 @@ sealed interface ResultadoAdmin {
 
 class AdminViewModel(
     private val repo: ItemRepository,
-    private val notificador: Notificador
+    private val notificador: Notificador,
+    private val textos: ProveedorTextos
 ) : ViewModel() {
 
     val estado: StateFlow<UiState<ResumenAdmin>> = repo.items
         .map<List<Item>, UiState<ResumenAdmin>> { lista -> UiState.Exito(lista.aResumen()) }
-        .catch { error -> emit(UiState.Error(error.aMensajeUsuario())) }
+        .catch { error -> emit(UiState.Error(error.aMensajeUsuario(textos))) }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(TIEMPO_ESPERA_MS),
@@ -59,10 +62,13 @@ class AdminViewModel(
     fun sincronizar() = ejecutar {
         repo.refrescar().fold(
             onSuccess = { cantidad ->
-                notificador.mostrar(TITULO_NOTIFICACION, "Se guardaron $cantidad elementos")
+                notificador.mostrar(
+                    textos.texto(R.string.notificacion_titulo),
+                    textos.plural(R.plurals.notificacion_guardados, cantidad, cantidad)
+                )
                 ResultadoAdmin.Sincronizado(cantidad)
             },
-            onFailure = { error -> ResultadoAdmin.Error(error.aMensajeUsuario()) }
+            onFailure = { error -> ResultadoAdmin.Error(error.aMensajeUsuario(textos)) }
         )
     }
 
@@ -84,7 +90,7 @@ class AdminViewModel(
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                ResultadoAdmin.Error(e.aMensajeUsuario())
+                ResultadoAdmin.Error(e.aMensajeUsuario(textos))
             } finally {
                 _trabajando.value = false
             }
@@ -100,10 +106,11 @@ class AdminViewModel(
 
     companion object {
         private const val TIEMPO_ESPERA_MS = 5_000L
-        private const val TITULO_NOTIFICACION = "Datos actualizados"
 
         fun factory(container: AppContainer): ViewModelProvider.Factory = viewModelFactory {
-            initializer { AdminViewModel(container.itemRepository, container.notificador) }
+            initializer {
+                AdminViewModel(container.itemRepository, container.notificador, container.textos)
+            }
         }
     }
 }

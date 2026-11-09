@@ -13,6 +13,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import com.tecsup.productos.MainActivity
+import com.tecsup.productos.R
 
 class NotificadorAndroid(
     private val context: Context
@@ -26,10 +27,10 @@ class NotificadorAndroid(
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val canal = NotificationChannel(
                 CANAL_ID,
-                "Sincronización",
+                context.getString(R.string.notificacion_canal_nombre),
                 NotificationManager.IMPORTANCE_DEFAULT
             ).apply {
-                description = "Avisos al terminar de sincronizar los productos"
+                description = context.getString(R.string.notificacion_canal_descripcion)
             }
             context.getSystemService(NotificationManager::class.java)
                 .createNotificationChannel(canal)
@@ -55,7 +56,7 @@ class NotificadorAndroid(
         )
 
         val notificacion = NotificationCompat.Builder(context, CANAL_ID)
-            .setSmallIcon(android.R.drawable.stat_notify_sync)
+            .setSmallIcon(R.drawable.ic_notificacion)
             .setContentTitle(titulo)
             .setContentText(texto)
             .setContentIntent(pendingIntent)

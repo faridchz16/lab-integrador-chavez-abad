@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.tecsup.productos.AppContainer
+import com.tecsup.productos.data.recursos.ProveedorTextos
 import com.tecsup.productos.data.repository.ItemRepository
 import com.tecsup.productos.domain.model.Item
 import com.tecsup.productos.ui.UiState
@@ -18,6 +19,7 @@ import kotlinx.coroutines.launch
 
 class DetalleViewModel(
     private val repo: ItemRepository,
+    private val textos: ProveedorTextos,
     private val id: Int
 ) : ViewModel() {
 
@@ -45,7 +47,7 @@ class DetalleViewModel(
             _estado.value = UiState.Cargando
             _estado.value = repo.obtenerDetalle(id).fold(
                 onSuccess = { item -> UiState.Exito(item) },
-                onFailure = { error -> UiState.Error(error.aMensajeUsuario()) }
+                onFailure = { error -> UiState.Error(error.aMensajeUsuario(textos)) }
             )
         }
     }
@@ -57,7 +59,7 @@ class DetalleViewModel(
     companion object {
         fun factory(container: AppContainer, id: Int): ViewModelProvider.Factory =
             viewModelFactory {
-                initializer { DetalleViewModel(container.itemRepository, id) }
+                initializer { DetalleViewModel(container.itemRepository, container.textos, id) }
             }
     }
 }

@@ -1,8 +1,11 @@
 package com.tecsup.productos.ui.login
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -16,7 +19,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -29,13 +31,16 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -51,7 +56,9 @@ import com.tecsup.productos.domain.model.Sesion
 import com.tecsup.productos.domain.validacion.ErrorCampo
 import com.tecsup.productos.domain.validacion.ValidadorLogin
 import com.tecsup.productos.ui.UiState
+import com.tecsup.productos.ui.components.LogoStockify
 import com.tecsup.productos.ui.theme.ProductosTheme
+import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen(
@@ -95,20 +102,7 @@ fun LoginScreen(
                         .fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Surface(
-                        shape = CircleShape,
-                        color = MaterialTheme.colorScheme.primaryContainer,
-                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                        modifier = Modifier.size(88.dp)
-                    ) {
-                        Box(contentAlignment = Alignment.Center) {
-                            Icon(
-                                painter = painterResource(R.drawable.ic_tienda),
-                                contentDescription = null,
-                                modifier = Modifier.size(44.dp)
-                            )
-                        }
-                    }
+                    LogoAnimado()
                     Spacer(modifier = Modifier.height(24.dp))
                     Text(
                         text = stringResource(R.string.login_bienvenida),
@@ -239,6 +233,35 @@ fun LoginScreen(
         }
     }
 }
+
+@Composable
+private fun LogoAnimado() {
+    val escala = remember { Animatable(ESCALA_INICIAL_LOGO) }
+    val opacidad = remember { Animatable(0f) }
+    LaunchedEffect(Unit) {
+        launch {
+            escala.animateTo(
+                targetValue = 1f,
+                animationSpec = spring(
+                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                    stiffness = Spring.StiffnessLow
+                )
+            )
+        }
+        opacidad.animateTo(1f, animationSpec = tween(DURACION_APARICION_MS))
+    }
+    LogoStockify(
+        tamano = 120.dp,
+        modifier = Modifier.graphicsLayer {
+            scaleX = escala.value
+            scaleY = escala.value
+            alpha = opacidad.value
+        }
+    )
+}
+
+private const val ESCALA_INICIAL_LOGO = 0.6f
+private const val DURACION_APARICION_MS = 500
 
 @Composable
 private fun mensajeErrorCorreo(error: ErrorCampo): String = when (error) {

@@ -1,3 +1,20 @@
 <resources>
-    <string name="app_name">Productos</string>
+    <string name="app_name">Stockify</string>
+    <string name="logo_descripcion">Logo de Stockify</string>
+    <string name="producto_sin_marca">Sin marca</string>
+    <string name="error_sin_conexion">No hay conexión a internet</string>
+    <string name="error_no_encontrado">No se encontró la información solicitada</string>
+    <string name="error_servidor">El servidor respondió con error %1$d</string>
+    <string name="error_inesperado">Ocurrió un error inesperado</string>
+    <string name="error_credenciales">Correo o contraseña incorrectos</string>
+    <string name="error_demasiados_intentos">Demasiados intentos. Espera unos minutos e inténtalo de nuevo</string>
+    <string name="error_inicio_sesion">No se pudo iniciar sesión. Inténtalo de nuevo</string>
+    <string name="notificacion_titulo">Datos actualizados</string>
+    <string name="notificacion_canal_nombre">Sincronización</string>
+    <string name="notificacion_canal_descripcion">Avisos al terminar de sincronizar los productos</string>
+    <plurals name="notificacion_guardados">
+        <item quantity="one">Se guardó %1$d elemento</item>
+        <item quantity="many">Se guardaron %1$d elementos</item>
+        <item quantity="other">Se guardaron %1$d elementos</item>
+    </plurals>
 </resources>

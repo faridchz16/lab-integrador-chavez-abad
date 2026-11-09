@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="login_bienvenida">Bienvenido</string>
-    <string name="login_subtitulo">Ingresa con tu cuenta para ver el catálogo de productos.</string>
+    <string name="login_bienvenida">Bienvenido a Stockify</string>
+    <string name="login_subtitulo">Controla tu inventario en un solo lugar. Ingresa con tu cuenta para continuar.</string>
     <string name="login_correo">Correo electrónico</string>
     <string name="login_clave">Contraseña</string>
     <string name="login_ingresar">Ingresar</string>

@@ -7,6 +7,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.tecsup.productos.AppContainer
 import com.tecsup.productos.data.auth.AuthRepository
+import com.tecsup.productos.data.recursos.ProveedorTextos
 import com.tecsup.productos.domain.model.Sesion
 import com.tecsup.productos.domain.validacion.ErrorCampo
 import com.tecsup.productos.domain.validacion.ValidadorLogin
@@ -26,7 +27,8 @@ data class FormularioLogin(
 )
 
 class LoginViewModel(
-    private val auth: AuthRepository
+    private val auth: AuthRepository,
+    private val textos: ProveedorTextos
 ) : ViewModel() {
 
     private val _formulario = MutableStateFlow(FormularioLogin())
@@ -58,7 +60,7 @@ class LoginViewModel(
             _estado.value = UiState.Cargando
             _estado.value = auth.iniciarSesion(actual.correo.trim(), actual.clave).fold(
                 onSuccess = { sesion -> UiState.Exito(sesion) },
-                onFailure = { error -> UiState.Error(error.aMensajeUsuario()) }
+                onFailure = { error -> UiState.Error(error.aMensajeUsuario(textos)) }
             )
         }
     }
@@ -69,7 +71,7 @@ class LoginViewModel(
 
     companion object {
         fun factory(container: AppContainer): ViewModelProvider.Factory = viewModelFactory {
-            initializer { LoginViewModel(container.authRepository) }
+            initializer { LoginViewModel(container.authRepository, container.textos) }
         }
     }
 }

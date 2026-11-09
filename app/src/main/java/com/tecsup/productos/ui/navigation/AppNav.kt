@@ -1,5 +1,6 @@
 package com.tecsup.productos.ui.navigation
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -12,9 +13,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
@@ -23,13 +26,16 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.tecsup.productos.AppContainer
 import com.tecsup.productos.R
+import com.tecsup.productos.domain.model.ModoTema
 import com.tecsup.productos.domain.model.Rol
 import com.tecsup.productos.domain.model.Sesion
 import com.tecsup.productos.ui.UiState
 import com.tecsup.productos.ui.admin.AdminScreen
 import com.tecsup.productos.ui.admin.AdminViewModel
-import com.tecsup.productos.ui.components.Cargando
+import com.tecsup.productos.ui.ajustes.AjustesScreen
+import com.tecsup.productos.ui.ajustes.AjustesViewModel
 import com.tecsup.productos.ui.components.DialogoCerrarSesion
+import com.tecsup.productos.ui.components.LogoStockify
 import com.tecsup.productos.ui.components.SolicitarPermisoNotificaciones
 import com.tecsup.productos.ui.detalle.DetalleScreen
 import com.tecsup.productos.ui.detalle.DetalleViewModel
@@ -60,7 +66,9 @@ fun AppNav(
             modifier = modifier
         )
         else -> Surface(modifier = modifier.fillMaxSize()) {
-            Cargando()
+            Box(contentAlignment = Alignment.Center) {
+                LogoStockify(tamano = 120.dp)
+            }
         }
     }
 }
@@ -136,10 +144,10 @@ private fun NavegacionPrincipal(
                             contentDescription = stringResource(R.string.favoritos_ver)
                         )
                     }
-                    IconButton(onClick = { mostrarDialogoSalir = true }) {
+                    IconButton(onClick = { navController.navigate(Rutas.Ajustes) }) {
                         Icon(
-                            painter = painterResource(R.drawable.ic_cerrar_sesion),
-                            contentDescription = stringResource(R.string.sesion_cerrar)
+                            painter = painterResource(R.drawable.ic_ajustes),
+                            contentDescription = stringResource(R.string.ajustes_abrir)
                         )
                     }
                 }
@@ -192,6 +200,19 @@ private fun NavegacionPrincipal(
                 onSincronizar = viewModel::sincronizar,
                 onLimpiarCache = viewModel::limpiarCache,
                 onResultadoMostrado = viewModel::resultadoMostrado
+            )
+        }
+        composable<Rutas.Ajustes> {
+            val viewModel: AjustesViewModel = viewModel(
+                factory = AjustesViewModel.factory(container)
+            )
+            val modoTema by viewModel.modoTema.collectAsStateWithLifecycle()
+            AjustesScreen(
+                sesion = sesionVigente,
+                modoTema = modoTema ?: ModoTema.SISTEMA,
+                onCambiarModoTema = viewModel::cambiarModoTema,
+                onCerrarSesion = { mostrarDialogoSalir = true },
+                onVolver = { navController.navigateUp() }
             )
         }
     }

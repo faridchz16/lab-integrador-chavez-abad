@@ -51,7 +51,7 @@ fun ProductoCard(
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
-                    text = item.marca,
+                    text = item.marca.ifBlank { stringResource(R.string.producto_sin_marca) },
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,

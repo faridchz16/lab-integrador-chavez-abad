@@ -74,6 +74,9 @@ dependencies {
     // Imágenes
     implementation(libs.coil.compose)
 
+    implementation(libs.androidx.core.splashscreen)
+    implementation(libs.androidx.datastore.preferences)
+
     // Pruebas
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)

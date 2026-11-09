@@ -11,6 +11,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.tecsup.productos.R
 import com.tecsup.productos.domain.model.EstadoStock
+import com.tecsup.productos.ui.theme.coloresStock
 
 @Composable
 fun EtiquetaStock(
@@ -18,22 +19,22 @@ fun EtiquetaStock(
     stock: Int?,
     modifier: Modifier = Modifier
 ) {
-    val colores = MaterialTheme.colorScheme
+    val colores = MaterialTheme.coloresStock
     val estilo: Triple<String, Color, Color> = when (estado) {
         EstadoStock.DISPONIBLE -> Triple(
             stringResource(R.string.stock_disponible, stock ?: 0),
-            colores.secondaryContainer,
-            colores.onSecondaryContainer
+            colores.correcto.contenedor,
+            colores.correcto.contenido
         )
         EstadoStock.STOCK_BAJO -> Triple(
             stringResource(R.string.stock_bajo, stock ?: 0),
-            colores.tertiaryContainer,
-            colores.onTertiaryContainer
+            colores.cercaMinimo.contenedor,
+            colores.cercaMinimo.contenido
         )
         EstadoStock.AGOTADO -> Triple(
             stringResource(R.string.stock_agotado),
-            colores.errorContainer,
-            colores.onErrorContainer
+            colores.critico.contenedor,
+            colores.critico.contenido
         )
         EstadoStock.SIN_DATO -> return
     }

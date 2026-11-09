@@ -113,7 +113,7 @@ private fun ContenidoDetalle(item: Item) {
         GaleriaImagenes(item = item)
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = item.marca,
+                text = item.marca.ifBlank { stringResource(R.string.producto_sin_marca) },
                 style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

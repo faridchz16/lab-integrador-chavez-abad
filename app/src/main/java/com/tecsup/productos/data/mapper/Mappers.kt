@@ -7,7 +7,7 @@ import com.tecsup.productos.domain.model.Item
 fun ItemDto.aEntity(esFavorito: Boolean = false): ItemEntity = ItemEntity(
     id = id,
     titulo = title,
-    marca = brand ?: "Sin marca",
+    marca = brand.orEmpty(),
     precio = price,
     imagenUrl = thumbnail,
     rating = rating,
@@ -33,7 +33,7 @@ fun ItemEntity.aModelo(): Item = Item(
 fun ItemDto.aModelo(esFavorito: Boolean = false): Item = Item(
     id = id,
     titulo = title,
-    marca = brand ?: "Sin marca",
+    marca = brand.orEmpty(),
     precio = price,
     imagenUrl = thumbnail,
     esFavorito = esFavorito,

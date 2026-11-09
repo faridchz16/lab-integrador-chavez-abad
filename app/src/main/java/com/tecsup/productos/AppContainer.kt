@@ -5,6 +5,10 @@ import androidx.room.Room
 import com.tecsup.productos.data.auth.AuthRepository
 import com.tecsup.productos.data.auth.FirebaseAuthRepository
 import com.tecsup.productos.data.local.AppDatabase
+import com.tecsup.productos.data.preferencias.DataStorePreferenciasRepository
+import com.tecsup.productos.data.preferencias.PreferenciasRepository
+import com.tecsup.productos.data.recursos.ProveedorTextos
+import com.tecsup.productos.data.recursos.ProveedorTextosAndroid
 import com.tecsup.productos.data.remote.ApiService
 import com.tecsup.productos.data.remote.RetrofitClient
 import com.tecsup.productos.data.repository.ItemRepository
@@ -32,5 +36,13 @@ class AppContainer(private val context: Context) {
 
     val notificador: Notificador by lazy {
         NotificadorAndroid(context)
+    }
+
+    val preferenciasRepository: PreferenciasRepository by lazy {
+        DataStorePreferenciasRepository(context)
+    }
+
+    val textos: ProveedorTextos by lazy {
+        ProveedorTextosAndroid(context)
     }
 }
