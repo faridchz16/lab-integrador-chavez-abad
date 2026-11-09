@@ -33,6 +33,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -85,7 +86,8 @@ fun ListaScreen(
     historial: List<String>,
     rangoPrecios: ClosedFloatingPointRange<Double>?,
     acciones: AccionesCatalogo,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    refrescando: Boolean = false
 ) {
     var busquedaAbierta by rememberSaveable { mutableStateOf(false) }
     var filtrosAbiertos by rememberSaveable { mutableStateOf(false) }
@@ -146,7 +148,11 @@ fun ListaScreen(
                         modifier = Modifier.padding(horizontal = 16.dp)
                     )
                 }
-                Box(modifier = Modifier.weight(1f)) {
+                PullToRefreshBox(
+                    isRefreshing = refrescando,
+                    onRefresh = acciones.onReintentar,
+                    modifier = Modifier.weight(1f)
+                ) {
                     AnimatedContent(
                         targetState = estado,
                         contentKey = { it::class },
