@@ -1,3 +1,3 @@
 package com.tecsup.productos.domain.model
 
-enum class ModoTema { CLARO, OSCURO, SISTEMA }
+enum class ModoTema { CLARO, OSCURO }

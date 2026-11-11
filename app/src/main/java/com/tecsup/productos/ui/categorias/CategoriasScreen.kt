@@ -10,21 +10,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.pluralStringResource
@@ -37,9 +33,13 @@ import androidx.compose.ui.unit.dp
 import com.tecsup.productos.R
 import com.tecsup.productos.domain.model.Categoria
 import com.tecsup.productos.ui.UiState
+import com.tecsup.productos.ui.components.LogoMarca
 import com.tecsup.productos.ui.components.Cargando
+import com.tecsup.productos.ui.components.LogoMarca
 import com.tecsup.productos.ui.components.ErrorView
+import com.tecsup.productos.ui.components.LogoMarca
 import com.tecsup.productos.ui.components.EstadoVacio
+import com.tecsup.productos.ui.components.LogoMarca
 import com.tecsup.productos.ui.components.rebote
 import com.tecsup.productos.ui.theme.ProductosTheme
 import com.tecsup.productos.ui.theme.coloresStock
@@ -128,19 +128,11 @@ private fun TarjetaCategoria(
             .semantics { contentDescription = descripcion }
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Surface(
-                shape = CircleShape,
-                color = colores.first,
-                contentColor = colores.second,
-                modifier = Modifier.size(52.dp)
-            ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Text(
-                        text = categoria.nombre.take(1).uppercase(),
-                        style = MaterialTheme.typography.titleLarge
-                    )
-                }
-            }
+            LogoMarca(
+                nombre = categoria.nombre,
+                colorFondo = colores.first,
+                colorLetra = colores.second
+            )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = categoria.nombre,

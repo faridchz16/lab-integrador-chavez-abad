@@ -536,7 +536,7 @@ private fun NavegacionPrincipal(
                         val modoTema by viewModel.modoTema.collectAsStateWithLifecycle()
                         AjustesScreen(
                             sesion = sesionVigente,
-                            modoTema = modoTema ?: ModoTema.SISTEMA,
+                            modoTema = modoTema ?: ModoTema.CLARO,
                             onCambiarModoTema = viewModel::cambiarModoTema,
                             onCerrarSesion = { mostrarDialogoSalir = true },
                             cantidadFavoritos = cantidadFavoritos,

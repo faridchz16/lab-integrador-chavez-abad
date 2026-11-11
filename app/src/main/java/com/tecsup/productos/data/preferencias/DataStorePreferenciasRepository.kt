@@ -28,7 +28,7 @@ class DataStorePreferenciasRepository(
 
     override val modoTema: Flow<ModoTema> = preferencias.map { valores ->
         val guardado = valores[CLAVE_MODO_TEMA]
-        ModoTema.entries.firstOrNull { it.name == guardado } ?: ModoTema.SISTEMA
+        ModoTema.entries.firstOrNull { it.name == guardado } ?: ModoTema.CLARO
     }
 
     override val historialBusqueda: Flow<List<String>> = preferencias.map { valores ->

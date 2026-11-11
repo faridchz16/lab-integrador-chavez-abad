@@ -8,7 +8,6 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -44,11 +43,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val modoTema by ajustesViewModel.modoTema.collectAsStateWithLifecycle()
-            val temaOscuro = when (modoTema ?: ModoTema.SISTEMA) {
-                ModoTema.CLARO -> false
-                ModoTema.OSCURO -> true
-                ModoTema.SISTEMA -> isSystemInDarkTheme()
-            }
+            val temaOscuro = modoTema == ModoTema.OSCURO
             DisposableEffect(temaOscuro) {
                 enableEdgeToEdge(
                     statusBarStyle = SystemBarStyle.auto(Color.TRANSPARENT, Color.TRANSPARENT) {

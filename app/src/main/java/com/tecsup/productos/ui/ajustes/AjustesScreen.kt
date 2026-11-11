@@ -259,7 +259,6 @@ private fun etiquetaModoTema(modo: ModoTema): String = stringResource(
     when (modo) {
         ModoTema.CLARO -> R.string.ajustes_tema_claro
         ModoTema.OSCURO -> R.string.ajustes_tema_oscuro
-        ModoTema.SISTEMA -> R.string.ajustes_tema_sistema
     }
 )
 
@@ -269,7 +268,7 @@ private fun AjustesScreenPreview() {
     ProductosTheme {
         AjustesScreen(
             sesion = Sesion(uid = "1", correo = "admin@productos.com", rol = Rol.ADMIN),
-            modoTema = ModoTema.SISTEMA,
+            modoTema = ModoTema.CLARO,
             onCambiarModoTema = {},
             onCerrarSesion = {},
             cantidadFavoritos = 3,

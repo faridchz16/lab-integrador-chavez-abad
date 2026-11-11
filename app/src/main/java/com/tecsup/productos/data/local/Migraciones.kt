@@ -63,6 +63,26 @@ val MIGRACION_4_5 = object : Migration(4, 5) {
     }
 }
 
+val MIGRACION_6_7 = object : Migration(6, 7) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+            "UPDATE categorias SET nombre = 'Xiaomi' WHERE nombre = 'Realme' COLLATE NOCASE " +
+                "AND NOT EXISTS (SELECT 1 FROM categorias WHERE nombre = 'Xiaomi' COLLATE NOCASE)"
+        )
+        db.execSQL(
+            "UPDATE items SET categoriaId = " +
+                "(SELECT id FROM categorias WHERE nombre = 'Xiaomi' COLLATE NOCASE LIMIT 1) " +
+                "WHERE categoriaId IN (SELECT id FROM categorias WHERE nombre = 'Realme' COLLATE NOCASE)"
+        )
+        db.execSQL("DELETE FROM categorias WHERE nombre = 'Realme' COLLATE NOCASE")
+        db.execSQL("UPDATE items SET marca = 'Xiaomi' WHERE marca = 'Realme' COLLATE NOCASE")
+        db.execSQL(
+            "UPDATE items SET titulo = REPLACE(titulo, 'Realme', 'Redmi') " +
+                "WHERE titulo LIKE 'Realme%' AND editadoLocalmente = 0"
+        )
+    }
+}
+
 val MIGRACION_5_6 = object : Migration(5, 6) {
     override fun migrate(db: SupportSQLiteDatabase) {
         db.execSQL("UPDATE items SET precio = ROUND(precio * $TIPO_CAMBIO_DOLAR_A_SOL, 2)")

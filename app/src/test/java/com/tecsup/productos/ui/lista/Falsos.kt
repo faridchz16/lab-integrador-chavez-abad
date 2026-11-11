@@ -55,7 +55,7 @@ class CategoriaRepositoryFalso : CategoriaRepository {
 
 class PreferenciasRepositoryFalso : PreferenciasRepository {
     private val historial = MutableStateFlow<List<String>>(emptyList())
-    override val modoTema: Flow<ModoTema> = MutableStateFlow(ModoTema.SISTEMA)
+    override val modoTema: Flow<ModoTema> = MutableStateFlow(ModoTema.CLARO)
     override val historialBusqueda: Flow<List<String>> = historial
     override suspend fun guardarModoTema(modo: ModoTema) = Unit
     override suspend fun agregarBusqueda(consulta: String) {

@@ -8,6 +8,7 @@ import com.tecsup.productos.data.mapper.aEntity
 import com.tecsup.productos.data.mapper.aModelo
 import com.tecsup.productos.data.mapper.fusionarCon
 import com.tecsup.productos.data.remote.ApiService
+import com.tecsup.productos.data.remote.enEspanol
 import com.tecsup.productos.domain.model.Item
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
@@ -34,7 +35,7 @@ class ItemRepositoryImpl(
 
     override suspend fun refrescar(): Result<Int> = try {
         val existentes = dao.todosUnaVez().associateBy { it.id }
-        val actualizados = api.listar().products.map { dto ->
+        val actualizados = api.listar().products.map { it.enEspanol() }.map { dto ->
             val previo = existentes[dto.id]
             previo?.fusionarCon(dto) ?: dto.aEntity(obtenerOCrearCategoria(dto.brand))
         }
@@ -57,7 +58,7 @@ class ItemRepositoryImpl(
                 ?: Result.failure(NoSuchElementException())
         }
         return try {
-            val dto = api.detalle(id)
+            val dto = api.detalle(id).enEspanol()
             Result.success(guardado?.let { dto.aModelo(it) } ?: dto.aModelo())
         } catch (e: IOException) {
             if (guardado != null) Result.success(guardado) else Result.failure(e)
