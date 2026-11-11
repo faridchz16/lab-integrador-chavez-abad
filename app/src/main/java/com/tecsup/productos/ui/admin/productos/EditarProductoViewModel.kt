@@ -19,6 +19,7 @@ import com.tecsup.productos.domain.inventario.aProducto
 import com.tecsup.productos.domain.inventario.con
 import com.tecsup.productos.domain.model.Categoria
 import com.tecsup.productos.domain.model.Item
+import com.tecsup.productos.domain.model.TipoProducto
 import com.tecsup.productos.ui.aMensajeUsuario
 import com.tecsup.productos.ui.admin.ResultadoEdicion
 import com.tecsup.productos.ui.admin.TipoResultadoEdicion
@@ -125,6 +126,12 @@ class EditarProductoViewModel(
     fun seleccionarCategoria(categoriaId: Long?) {
         _estado.update { actual ->
             actual.copy(formulario = actual.formulario.copy(categoriaId = categoriaId))
+        }
+    }
+
+    fun seleccionarTipo(tipo: TipoProducto) {
+        _estado.update { actual ->
+            actual.copy(formulario = actual.formulario.copy(tipo = tipo))
         }
     }
 

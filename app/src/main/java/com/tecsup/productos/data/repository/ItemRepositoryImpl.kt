@@ -8,8 +8,10 @@ import com.tecsup.productos.data.mapper.aEntity
 import com.tecsup.productos.data.mapper.aModelo
 import com.tecsup.productos.data.mapper.fusionarCon
 import com.tecsup.productos.data.remote.ApiService
+import com.tecsup.productos.data.remote.dto.ItemDto
 import com.tecsup.productos.data.remote.enEspanol
 import com.tecsup.productos.domain.model.Item
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.serialization.SerializationException
@@ -35,7 +37,10 @@ class ItemRepositoryImpl(
 
     override suspend fun refrescar(): Result<Int> = try {
         val existentes = dao.todosUnaVez().associateBy { it.id }
-        val actualizados = api.listar().products.map { it.enEspanol() }.map { dto ->
+        val productos = (api.listar().products + productosAdicionales())
+            .distinctBy { it.id }
+            .map { it.enEspanol() }
+        val actualizados = productos.map { dto ->
             val previo = existentes[dto.id]
             previo?.fusionarCon(dto) ?: dto.aEntity(obtenerOCrearCategoria(dto.brand))
         }
@@ -48,6 +53,17 @@ class ItemRepositoryImpl(
     } catch (e: SerializationException) {
         Result.failure(e)
     }
+
+    private suspend fun productosAdicionales(): List<ItemDto> =
+        CATEGORIAS_ADICIONALES.flatMap { categoria ->
+            try {
+                api.listarCategoria(categoria).products
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                emptyList()
+            }
+        }.filter { dto -> MARCAS_DEL_CATALOGO.any { it.equals(dto.brand, ignoreCase = true) } }
 
     override suspend fun obtenerDetalle(id: Int): Result<Item> {
         val guardado = dao.porId(id)?.let { entidad ->
@@ -86,5 +102,10 @@ class ItemRepositoryImpl(
     ): List<Item> {
         val nombres = categorias.associate { it.id to it.nombre }
         return map { it.aModelo(nombres[it.categoriaId]) }
+    }
+
+    private companion object {
+        val CATEGORIAS_ADICIONALES = listOf("tablets", "mobile-accessories")
+        val MARCAS_DEL_CATALOGO = setOf("Apple", "Samsung", "Oppo", "Vivo", "Xiaomi", "Realme")
     }
 }

@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.tecsup.productos.domain.model.STOCK_MAXIMO_PREDETERMINADO
 import com.tecsup.productos.domain.model.STOCK_MINIMO_PREDETERMINADO
+import com.tecsup.productos.domain.model.TipoProducto
 import com.tecsup.productos.domain.model.UNIDADES_POR_PEDIDO_PREDETERMINADAS
 
 @Entity(tableName = "items")
@@ -29,5 +30,7 @@ data class ItemEntity(
     @ColumnInfo(defaultValue = "0")
     val editadoLocalmente: Boolean = false,
     @ColumnInfo(defaultValue = "0")
-    val eliminado: Boolean = false
+    val eliminado: Boolean = false,
+    @ColumnInfo(defaultValue = "SMARTPHONE")
+    val tipo: String = TipoProducto.SMARTPHONE.name
 )

@@ -469,6 +469,7 @@ private fun NavegacionPrincipal(
                             avisos = viewModel.avisos,
                             onCambiarCampo = viewModel::cambiarCampo,
                             onSeleccionarCategoria = viewModel::seleccionarCategoria,
+                            onSeleccionarTipo = viewModel::seleccionarTipo,
                             onGuardar = viewModel::guardar,
                             onEliminar = viewModel::eliminar,
                             onVolver = { navController.navigateUp() }

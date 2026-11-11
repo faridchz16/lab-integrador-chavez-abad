@@ -41,6 +41,8 @@ import androidx.compose.ui.unit.dp
 import com.tecsup.productos.R
 import com.tecsup.productos.domain.catalogo.FiltroCatalogo
 import com.tecsup.productos.domain.catalogo.FiltroStock
+import com.tecsup.productos.domain.model.TipoProducto
+import com.tecsup.productos.ui.components.nombreTipoProducto
 import com.tecsup.productos.domain.catalogo.OrdenCatalogo
 import com.tecsup.productos.domain.model.Categoria
 import kotlinx.coroutines.launch
@@ -58,6 +60,7 @@ fun HojaFiltros(
     val estadoHoja = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val alcance = rememberCoroutineScope()
     var categoriasElegidas by remember { mutableStateOf(filtroActual.categorias) }
+    var tiposElegidos by remember { mutableStateOf(filtroActual.tipos) }
     var estadosElegidos by remember { mutableStateOf(filtroActual.estadosStock) }
     var orden by remember { mutableStateOf(filtroActual.orden) }
     val limites = rangoPrecios?.let { it.start.toFloat()..it.endInclusive.toFloat() }
@@ -94,6 +97,23 @@ fun HojaFiltros(
                     text = stringResource(R.string.filtros_titulo),
                     style = MaterialTheme.typography.titleLarge
                 )
+
+                TituloSeccion(texto = stringResource(R.string.filtros_tipo))
+                FlowRow(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    TipoProducto.entries.forEach { tipo ->
+                        val elegido = tipo in tiposElegidos
+                        FilterChip(
+                            selected = elegido,
+                            onClick = {
+                                tiposElegidos = if (elegido) tiposElegidos - tipo else tiposElegidos + tipo
+                            },
+                            label = { Text(text = nombreTipoProducto(tipo)) }
+                        )
+                    }
+                }
 
                 TituloSeccion(texto = stringResource(R.string.filtros_categorias))
                 if (categorias.isEmpty()) {
@@ -199,6 +219,7 @@ fun HojaFiltros(
                                 onAplicar(
                                     FiltroCatalogo(
                                         categorias = categoriasElegidas,
+                                        tipos = tiposElegidos,
                                         precioMinimo = precioElegido(
                                             rango?.start,
                                             limitesPrecio?.start,

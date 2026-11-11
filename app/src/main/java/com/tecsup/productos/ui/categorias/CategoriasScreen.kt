@@ -35,11 +35,8 @@ import com.tecsup.productos.domain.model.Categoria
 import com.tecsup.productos.ui.UiState
 import com.tecsup.productos.ui.components.LogoMarca
 import com.tecsup.productos.ui.components.Cargando
-import com.tecsup.productos.ui.components.LogoMarca
 import com.tecsup.productos.ui.components.ErrorView
-import com.tecsup.productos.ui.components.LogoMarca
 import com.tecsup.productos.ui.components.EstadoVacio
-import com.tecsup.productos.ui.components.LogoMarca
 import com.tecsup.productos.ui.components.rebote
 import com.tecsup.productos.ui.theme.ProductosTheme
 import com.tecsup.productos.ui.theme.coloresStock

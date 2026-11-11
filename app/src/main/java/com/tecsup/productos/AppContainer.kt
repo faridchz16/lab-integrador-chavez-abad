@@ -18,6 +18,7 @@ import com.tecsup.productos.data.local.MIGRACION_3_4
 import com.tecsup.productos.data.local.MIGRACION_4_5
 import com.tecsup.productos.data.local.MIGRACION_5_6
 import com.tecsup.productos.data.local.MIGRACION_6_7
+import com.tecsup.productos.data.local.MIGRACION_7_8
 import com.tecsup.productos.data.pedidos.PedidoRepository
 import com.tecsup.productos.data.pedidos.RoomPedidoRepository
 import com.tecsup.productos.data.preferencias.DataStorePreferenciasRepository
@@ -45,7 +46,7 @@ class AppContainer(private val context: Context) {
 
     private val database: AppDatabase by lazy {
         Room.databaseBuilder(context, AppDatabase::class.java, "productos.db")
-            .addMigrations(MIGRACION_2_3, MIGRACION_3_4, MIGRACION_4_5, MIGRACION_5_6, MIGRACION_6_7)
+            .addMigrations(MIGRACION_2_3, MIGRACION_3_4, MIGRACION_4_5, MIGRACION_5_6, MIGRACION_6_7, MIGRACION_7_8)
             .fallbackToDestructiveMigration(dropAllTables = true)
             .build()
     }

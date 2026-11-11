@@ -12,6 +12,7 @@ import com.tecsup.productos.domain.carrito.LineaPedido
 import com.tecsup.productos.domain.carrito.Pedido
 import com.tecsup.productos.domain.model.Categoria
 import com.tecsup.productos.domain.model.Item
+import com.tecsup.productos.domain.model.TipoProducto
 import com.tecsup.productos.domain.model.dolaresASoles
 
 fun ItemDto.aEntity(categoriaId: Long?, esFavorito: Boolean = false): ItemEntity = ItemEntity(
@@ -25,7 +26,8 @@ fun ItemDto.aEntity(categoriaId: Long?, esFavorito: Boolean = false): ItemEntity
     descuento = discountPercentage,
     descripcion = description,
     esFavorito = esFavorito,
-    categoriaId = categoriaId
+    categoriaId = categoriaId,
+    tipo = TipoProducto.desdeApi(category, title).name
 )
 
 fun ItemEntity.fusionarCon(dto: ItemDto): ItemEntity {
@@ -37,7 +39,8 @@ fun ItemEntity.fusionarCon(dto: ItemDto): ItemEntity {
         imagenUrl = dto.thumbnail,
         rating = dto.rating,
         descuento = dto.discountPercentage,
-        descripcion = dto.description
+        descripcion = dto.description,
+        tipo = TipoProducto.desdeApi(dto.category, dto.title).name
     )
 }
 
@@ -57,7 +60,8 @@ fun ItemEntity.aModelo(nombreCategoria: String? = null): Item = Item(
     stockMinimo = stockMinimo,
     stockMaximo = stockMaximo,
     unidadesPorPedido = unidadesPorPedido,
-    editadoLocalmente = editadoLocalmente
+    editadoLocalmente = editadoLocalmente,
+    tipo = TipoProducto.desdeNombre(tipo)
 )
 
 fun ItemDto.aModelo(base: Item): Item =
@@ -72,7 +76,8 @@ fun ItemDto.aModelo(base: Item): Item =
             descripcion = description,
             rating = rating,
             descuento = discountPercentage,
-            imagenes = images
+            imagenes = images,
+            tipo = TipoProducto.desdeApi(category, title)
         )
     }
 
@@ -87,7 +92,8 @@ fun ItemDto.aModelo(esFavorito: Boolean = false): Item = Item(
     rating = rating,
     stock = stock,
     descuento = discountPercentage,
-    imagenes = images
+    imagenes = images,
+    tipo = TipoProducto.desdeApi(category, title)
 )
 
 fun CategoriaConConteo.aModelo(): Categoria = Categoria(

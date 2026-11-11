@@ -3,12 +3,14 @@ package com.tecsup.productos.domain.inventario
 import com.tecsup.productos.domain.model.Item
 import com.tecsup.productos.domain.model.STOCK_MAXIMO_PREDETERMINADO
 import com.tecsup.productos.domain.model.STOCK_MINIMO_PREDETERMINADO
+import com.tecsup.productos.domain.model.TipoProducto
 import com.tecsup.productos.domain.model.UNIDADES_POR_PEDIDO_PREDETERMINADAS
 
 data class FormularioProducto(
     val titulo: String = "",
     val marca: String = "",
     val categoriaId: Long? = null,
+    val tipo: TipoProducto = TipoProducto.SMARTPHONE,
     val descripcion: String = "",
     val imagenUrl: String = "",
     val precio: String = "",
@@ -151,13 +153,15 @@ fun FormularioProducto.aProducto(base: Item?, id: Int): Item = Item(
     stockMinimo = stockMinimo.aEntero() ?: STOCK_MINIMO_PREDETERMINADO,
     stockMaximo = stockMaximo.aEntero() ?: STOCK_MAXIMO_PREDETERMINADO,
     unidadesPorPedido = unidadesPorPedido.aEntero() ?: UNIDADES_POR_PEDIDO_PREDETERMINADAS,
-    editadoLocalmente = true
+    editadoLocalmente = true,
+    tipo = tipo
 )
 
 fun Item.aFormulario(): FormularioProducto = FormularioProducto(
     titulo = titulo,
     marca = marca,
     categoriaId = categoriaId,
+    tipo = tipo,
     descripcion = descripcion.orEmpty(),
     imagenUrl = imagenUrl.orEmpty(),
     precio = precio.sinCerosFinales(),

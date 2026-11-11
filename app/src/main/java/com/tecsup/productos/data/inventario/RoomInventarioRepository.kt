@@ -43,7 +43,8 @@ class RoomInventarioRepository(
                 stockMaximo = producto.stockMaximo,
                 unidadesPorPedido = producto.unidadesPorPedido,
                 editadoLocalmente = true,
-                eliminado = false
+                eliminado = false,
+                tipo = producto.tipo.name
             )
             itemDao.guardar(entidad)
             id

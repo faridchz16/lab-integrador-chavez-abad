@@ -35,6 +35,7 @@
     <string name="producto_form_titulo">Nombre *</string>
     <string name="producto_form_marca">Marca</string>
     <string name="producto_form_categoria">Categoría</string>
+    <string name="producto_form_tipo">Tipo de producto</string>
     <string name="producto_form_descripcion">Descripción</string>
     <string name="producto_form_imagen">Dirección de la imagen</string>
     <string name="producto_form_imagen_ayuda">Opcional. Pega un enlace que empiece con https://</string>

@@ -26,7 +26,12 @@
     <string name="sin_resultados_accion">Limpiar búsqueda y filtros</string>
 
     <string name="filtros_titulo">Filtros y orden</string>
-    <string name="filtros_categorias">Categorías</string>
+    <string name="filtros_categorias">Marcas</string>
+    <string name="filtros_tipo">Tipo de producto</string>
+    <string name="tipo_smartphone">Smartphones</string>
+    <string name="tipo_tablet">Tablets</string>
+    <string name="tipo_reloj">Relojes inteligentes</string>
+    <string name="tipo_accesorio">Accesorios</string>
     <string name="filtros_sin_categorias">Todavía no hay categorías. Sincroniza el catálogo para crearlas.</string>
     <string name="filtros_precio">Rango de precio</string>
     <string name="filtros_rango">%1$s – %2$s</string>

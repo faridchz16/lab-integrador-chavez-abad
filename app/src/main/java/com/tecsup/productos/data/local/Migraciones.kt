@@ -63,6 +63,12 @@ val MIGRACION_4_5 = object : Migration(4, 5) {
     }
 }
 
+val MIGRACION_7_8 = object : Migration(7, 8) {
+    override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL("ALTER TABLE items ADD COLUMN tipo TEXT NOT NULL DEFAULT 'SMARTPHONE'")
+    }
+}
+
 val MIGRACION_6_7 = object : Migration(6, 7) {
     override fun migrate(db: SupportSQLiteDatabase) {
         db.execSQL(

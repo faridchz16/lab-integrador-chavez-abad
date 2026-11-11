@@ -17,7 +17,8 @@ data class Item(
     val stockMinimo: Int = STOCK_MINIMO_PREDETERMINADO,
     val stockMaximo: Int = STOCK_MAXIMO_PREDETERMINADO,
     val unidadesPorPedido: Int = UNIDADES_POR_PEDIDO_PREDETERMINADAS,
-    val editadoLocalmente: Boolean = false
+    val editadoLocalmente: Boolean = false,
+    val tipo: TipoProducto = TipoProducto.SMARTPHONE
 )
 
 const val STOCK_MINIMO_PREDETERMINADO = 10

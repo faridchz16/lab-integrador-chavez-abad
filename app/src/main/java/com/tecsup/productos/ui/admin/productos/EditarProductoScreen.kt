@@ -64,12 +64,14 @@ import com.tecsup.productos.domain.inventario.CampoProducto
 import com.tecsup.productos.domain.inventario.ErrorCampo
 import com.tecsup.productos.domain.inventario.ValidadorProducto
 import com.tecsup.productos.domain.model.Categoria
+import com.tecsup.productos.domain.model.TipoProducto
 import com.tecsup.productos.domain.model.estadoStock
 import com.tecsup.productos.ui.components.Cargando
 import com.tecsup.productos.ui.components.DialogoConfirmacion
 import com.tecsup.productos.ui.components.EstadoVacio
 import com.tecsup.productos.ui.components.EtiquetaStock
 import com.tecsup.productos.ui.components.ImagenProducto
+import com.tecsup.productos.ui.components.nombreTipoProducto
 import com.tecsup.productos.ui.components.PrecioProducto
 import com.tecsup.productos.ui.components.rebote
 import com.tecsup.productos.ui.theme.ProductosTheme
@@ -87,7 +89,8 @@ fun EditarProductoScreen(
     onGuardar: () -> Unit,
     onEliminar: () -> Unit,
     onVolver: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onSeleccionarTipo: (TipoProducto) -> Unit = {}
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     var confirmarDescarte by rememberSaveable { mutableStateOf(false) }
@@ -172,7 +175,8 @@ fun EditarProductoScreen(
                     estado = estado,
                     categorias = categorias,
                     onCambiarCampo = onCambiarCampo,
-                    onSeleccionarCategoria = onSeleccionarCategoria
+                    onSeleccionarCategoria = onSeleccionarCategoria,
+                    onSeleccionarTipo = onSeleccionarTipo
                 )
             }
         }
@@ -219,7 +223,8 @@ private fun FormularioProductoContenido(
     estado: EstadoEdicionProducto,
     categorias: List<Categoria>,
     onCambiarCampo: (CampoProducto, String) -> Unit,
-    onSeleccionarCategoria: (Long?) -> Unit
+    onSeleccionarCategoria: (Long?) -> Unit,
+    onSeleccionarTipo: (TipoProducto) -> Unit
 ) {
     val formulario = estado.formulario
     val errores = estado.erroresVisibles
@@ -254,6 +259,7 @@ private fun FormularioProductoContenido(
                 seleccionada = formulario.categoriaId,
                 onSeleccionar = onSeleccionarCategoria
             )
+            SelectorTipo(seleccionado = formulario.tipo, onSeleccionar = onSeleccionarTipo)
             CampoFormulario(
                 campo = CampoProducto.DESCRIPCION,
                 valor = formulario.descripcion,
@@ -500,6 +506,32 @@ private fun SelectorCategoria(
                     selected = categoria.id == seleccionada,
                     onClick = { onSeleccionar(categoria.id) },
                     label = { Text(text = categoria.nombre) }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun SelectorTipo(
+    seleccionado: TipoProducto,
+    onSeleccionar: (TipoProducto) -> Unit
+) {
+    Column {
+        Text(
+            text = stringResource(R.string.producto_form_tipo),
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            contentPadding = PaddingValues(vertical = 4.dp)
+        ) {
+            items(items = TipoProducto.entries, key = { it.name }) { tipo ->
+                FilterChip(
+                    selected = tipo == seleccionado,
+                    onClick = { onSeleccionar(tipo) },
+                    label = { Text(text = nombreTipoProducto(tipo)) }
                 )
             }
         }

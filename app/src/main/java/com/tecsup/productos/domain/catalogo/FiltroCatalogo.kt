@@ -2,6 +2,7 @@ package com.tecsup.productos.domain.catalogo
 
 import com.tecsup.productos.domain.model.EstadoStock
 import com.tecsup.productos.domain.model.Item
+import com.tecsup.productos.domain.model.TipoProducto
 import com.tecsup.productos.domain.model.estadoStock
 import com.tecsup.productos.domain.model.precioFinal
 import java.text.Normalizer
@@ -13,6 +14,7 @@ enum class FiltroStock { DISPONIBLE, STOCK_BAJO, AGOTADO }
 data class FiltroCatalogo(
     val consulta: String = "",
     val categorias: Set<Long> = emptySet(),
+    val tipos: Set<TipoProducto> = emptySet(),
     val precioMinimo: Double? = null,
     val precioMaximo: Double? = null,
     val estadosStock: Set<FiltroStock> = emptySet(),
@@ -22,6 +24,7 @@ data class FiltroCatalogo(
     val cantidadActivos: Int
         get() = listOf(
             categorias.isNotEmpty(),
+            tipos.isNotEmpty(),
             precioMinimo != null || precioMaximo != null,
             estadosStock.isNotEmpty(),
             orden != OrdenCatalogo.NOMBRE_ASC
@@ -37,6 +40,7 @@ data class FiltroCatalogo(
         val filtrados = items.filter { item ->
             coincideConsulta(item, termino) &&
                 coincideCategoria(item) &&
+                (tipos.isEmpty() || item.tipo in tipos) &&
                 coincidePrecio(item) &&
                 coincideStock(item)
         }
