@@ -8,9 +8,9 @@
         <item quantity="many">Filtrar y ordenar, %1$d filtros activos</item>
         <item quantity="other">Filtrar y ordenar, %1$d filtros activos</item>
     </plurals>
-    <string name="categoria_sin_nombre">Sin categoría</string>
+    <string name="categoria_sin_nombre">Sin marca</string>
 
-    <string name="busqueda_sugerencia">Busca por nombre, marca o categoría</string>
+    <string name="busqueda_sugerencia">Busca por nombre, marca o tipo</string>
     <string name="busqueda_limpiar">Borrar texto</string>
     <string name="busqueda_cerrar">Cerrar búsqueda</string>
     <string name="busqueda_recientes">Búsquedas recientes</string>
@@ -32,7 +32,7 @@
     <string name="tipo_tablet">Tablets</string>
     <string name="tipo_reloj">Relojes inteligentes</string>
     <string name="tipo_accesorio">Accesorios</string>
-    <string name="filtros_sin_categorias">Todavía no hay categorías. Sincroniza el catálogo para crearlas.</string>
+    <string name="filtros_sin_categorias">Todavía no hay marcas. Sincroniza el catálogo para crearlas.</string>
     <string name="filtros_precio">Rango de precio</string>
     <string name="filtros_rango">%1$s – %2$s</string>
     <string name="filtros_estado_stock">Estado del stock</string>

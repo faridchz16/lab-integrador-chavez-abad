@@ -37,16 +37,16 @@
     <string name="admin_menor_stock_detalle">%1$d · mín. %2$d</string>
     <string name="admin_gestion">Gestión</string>
     <string name="admin_gestion_productos">Productos</string>
-    <string name="admin_gestion_categorias">Categorías</string>
+    <string name="admin_gestion_categorias">Marcas</string>
     <plurals name="admin_gestion_productos_detalle">
         <item quantity="one">%1$d producto activo · crear, editar y eliminar</item>
         <item quantity="many">%1$d productos activos · crear, editar y eliminar</item>
         <item quantity="other">%1$d productos activos · crear, editar y eliminar</item>
     </plurals>
     <plurals name="admin_gestion_categorias_detalle">
-        <item quantity="one">%1$d categoría · crear, renombrar y eliminar</item>
-        <item quantity="many">%1$d categorías · crear, renombrar y eliminar</item>
-        <item quantity="other">%1$d categorías · crear, renombrar y eliminar</item>
+        <item quantity="one">%1$d marca · crear, renombrar y eliminar</item>
+        <item quantity="many">%1$d marcas · crear, renombrar y eliminar</item>
+        <item quantity="other">%1$d marcas · crear, renombrar y eliminar</item>
     </plurals>
     <string name="admin_exportar">Exportar inventario (CSV)</string>
     <string name="admin_exportar_ayuda">Guarda un archivo CSV con precios, stock y estado de cada producto. Se abre en Excel o Google Sheets.</string>

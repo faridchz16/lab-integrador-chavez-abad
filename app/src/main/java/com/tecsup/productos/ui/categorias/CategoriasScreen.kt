@@ -70,7 +70,7 @@ fun CategoriasScreen(
                     EstadoVacio(
                         titulo = stringResource(R.string.categorias_vacio_titulo),
                         mensaje = stringResource(R.string.categorias_vacio_mensaje),
-                        icono = R.drawable.ic_categoria_borde
+                        icono = R.drawable.ic_marca_borde
                     )
                 } else {
                     GrillaCategorias(

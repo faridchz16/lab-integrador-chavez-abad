@@ -128,7 +128,7 @@ private fun NavegacionPrincipal(
     val destinoInicial: Rutas = remember {
         when {
             sesion == null -> Rutas.Login
-            sesion.rol == Rol.ADMIN -> Rutas.Lista
+            sesion.rol == Rol.ADMIN -> Rutas.Admin
             else -> Rutas.Inicio
         }
     }
@@ -138,7 +138,7 @@ private fun NavegacionPrincipal(
     val entradaActual by navController.currentBackStackEntryAsState()
     val destinoActual = entradaActual?.destination
     val esAdmin = sesion?.rol == Rol.ADMIN
-    val raizPestanas: Rutas = if (esAdmin) Rutas.Lista else Rutas.Inicio
+    val raizPestanas: Rutas = if (esAdmin) Rutas.Admin else Rutas.Inicio
     val destinosVisibles = remember(esAdmin) {
         DestinoPrincipal.entries.filter { if (esAdmin) !it.soloCliente else !it.soloAdmin }
     }
@@ -224,7 +224,7 @@ private fun NavegacionPrincipal(
                             if (actual is UiState.Exito) {
                                 sesionViewModel.establecer(actual.datos)
                                 val destinoTrasLogin: Rutas = if (actual.datos.rol == Rol.ADMIN) {
-                                    Rutas.Lista
+                                    Rutas.Admin
                                 } else {
                                     Rutas.Inicio
                                 }
@@ -620,10 +620,10 @@ private inline fun <reified T : Rutas> NavGraphBuilder.pantalla(
 
 private fun NavHostController.irAPestana(destino: DestinoPrincipal, raiz: Rutas) {
     navigate(destino.ruta) {
-        if (raiz is Rutas.Inicio) {
-            popUpTo<Rutas.Inicio> { saveState = true }
-        } else {
-            popUpTo<Rutas.Lista> { saveState = true }
+        when (raiz) {
+            is Rutas.Inicio -> popUpTo<Rutas.Inicio> { saveState = true }
+            is Rutas.Admin -> popUpTo<Rutas.Admin> { saveState = true }
+            else -> popUpTo<Rutas.Lista> { saveState = true }
         }
         launchSingleTop = true
         restoreState = true

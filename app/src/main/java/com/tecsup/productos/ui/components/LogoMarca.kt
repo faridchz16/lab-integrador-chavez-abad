@@ -76,4 +76,4 @@ fun LogoMarca(
 
 private const val PREFIJO_RECURSO = "marca_"
 private const val TIPO_RECURSO = "drawable"
-private const val RELLENO_RELATIVO = 5
+private const val RELLENO_RELATIVO = 9

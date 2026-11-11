@@ -2,7 +2,7 @@
 <resources>
     <string name="inventario_productos_titulo">Gestionar productos</string>
     <string name="inventario_nuevo_producto">Nuevo producto</string>
-    <string name="inventario_buscar">Buscar por nombre, marca o categoría</string>
+    <string name="inventario_buscar">Buscar por nombre, marca o tipo</string>
     <string name="inventario_limpiar_busqueda">Limpiar búsqueda</string>
     <string name="inventario_vacio_titulo">Aún no hay productos</string>
     <string name="inventario_vacio_mensaje">Sincroniza desde el panel o crea tu primer producto.</string>
@@ -16,7 +16,7 @@
     <string name="inventario_producto_actualizado">Se guardaron los cambios de «%1$s»</string>
     <string name="inventario_producto_eliminado">«%1$s» se eliminó del catálogo</string>
     <string name="inventario_producto_restaurado">El producto se restauró</string>
-    <string name="inventario_error_duplicado">Ya existe una categoría llamada «%1$s»</string>
+    <string name="inventario_error_duplicado">Ya existe una marca llamada «%1$s»</string>
     <string name="inventario_error_no_encontrado">El elemento ya no existe. Actualiza la lista.</string>
     <plurals name="inventario_conteo">
         <item quantity="one">%1$d producto</item>
@@ -34,7 +34,7 @@
     <string name="producto_form_inventario_ayuda">Por debajo del mínimo el producto se marca en rojo y por encima del máximo en morado. Cada unidad pedida descuenta las unidades por pedido indicadas.</string>
     <string name="producto_form_titulo">Nombre *</string>
     <string name="producto_form_marca">Marca</string>
-    <string name="producto_form_categoria">Categoría</string>
+    <string name="producto_form_categoria">Marca del catálogo</string>
     <string name="producto_form_tipo">Tipo de producto</string>
     <string name="producto_form_descripcion">Descripción</string>
     <string name="producto_form_imagen">Dirección de la imagen</string>
@@ -74,26 +74,26 @@
     <string name="producto_error_unidades">Debe ser al menos 1</string>
     <string name="producto_error_url">Debe empezar con http:// o https://</string>
 
-    <string name="categorias_admin_titulo">Gestionar categorías</string>
-    <string name="categorias_admin_nueva">Nueva categoría</string>
-    <string name="categorias_admin_editar">Renombrar categoría</string>
-    <string name="categorias_admin_nombre">Nombre de la categoría</string>
+    <string name="categorias_admin_titulo">Gestionar marcas</string>
+    <string name="categorias_admin_nueva">Nueva marca</string>
+    <string name="categorias_admin_editar">Renombrar marca</string>
+    <string name="categorias_admin_nombre">Nombre de la marca</string>
     <string name="categorias_admin_guardar">Guardar</string>
     <string name="categorias_admin_renombrar">Renombrar %1$s</string>
     <string name="categorias_admin_eliminar">Eliminar</string>
     <string name="categorias_admin_eliminar_de">Eliminar %1$s</string>
     <string name="categorias_admin_eliminar_pregunta">¿Eliminar «%1$s»?</string>
     <plurals name="categorias_admin_eliminar_mensaje">
-        <item quantity="one">Su %1$d producto quedará sin categoría. Podrás deshacerlo justo después.</item>
-        <item quantity="many">Sus %1$d productos quedarán sin categoría. Podrás deshacerlo justo después.</item>
-        <item quantity="other">Sus %1$d productos quedarán sin categoría. Podrás deshacerlo justo después.</item>
+        <item quantity="one">Su %1$d producto quedará sin marca. Podrás deshacerlo justo después.</item>
+        <item quantity="many">Sus %1$d productos quedarán sin marca. Podrás deshacerlo justo después.</item>
+        <item quantity="other">Sus %1$d productos quedarán sin marca. Podrás deshacerlo justo después.</item>
     </plurals>
-    <string name="categorias_admin_vacio_titulo">Aún no hay categorías</string>
-    <string name="categorias_admin_vacio_mensaje">Crea categorías para organizar el catálogo o sincroniza los productos.</string>
-    <string name="categorias_admin_creada">Se creó la categoría «%1$s»</string>
-    <string name="categorias_admin_renombrada">La categoría ahora se llama «%1$s»</string>
-    <string name="categorias_admin_eliminada">Se eliminó la categoría «%1$s»</string>
-    <string name="categorias_admin_restaurada">Se restauró la categoría «%1$s»</string>
+    <string name="categorias_admin_vacio_titulo">Aún no hay marcas</string>
+    <string name="categorias_admin_vacio_mensaje">Crea marcas para organizar el catálogo o sincroniza los productos.</string>
+    <string name="categorias_admin_creada">Se creó la marca «%1$s»</string>
+    <string name="categorias_admin_renombrada">La marca ahora se llama «%1$s»</string>
+    <string name="categorias_admin_eliminada">Se eliminó la marca «%1$s»</string>
+    <string name="categorias_admin_restaurada">Se restauró la marca «%1$s»</string>
     <string name="categorias_admin_error_corto">Escribe al menos 2 caracteres</string>
-    <string name="categorias_admin_error_duplicado">Ya existe una categoría con ese nombre</string>
+    <string name="categorias_admin_error_duplicado">Ya existe una marca con ese nombre</string>
 </resources>

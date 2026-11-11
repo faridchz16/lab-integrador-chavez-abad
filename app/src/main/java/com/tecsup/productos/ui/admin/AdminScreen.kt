@@ -281,7 +281,7 @@ private fun ContenidoAdmin(
         )
         Spacer(modifier = Modifier.height(12.dp))
         TarjetaGestion(
-            icono = R.drawable.ic_categoria,
+            icono = R.drawable.ic_marca,
             titulo = stringResource(R.string.admin_gestion_categorias),
             detalle = pluralStringResource(
                 R.plurals.admin_gestion_categorias_detalle,

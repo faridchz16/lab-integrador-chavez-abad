@@ -19,6 +19,13 @@ enum class DestinoPrincipal(
         iconoInactivo = R.drawable.ic_inicio_borde,
         soloCliente = true
     ),
+    ADMIN(
+        ruta = Rutas.Admin,
+        etiqueta = R.string.navegacion_admin,
+        iconoActivo = R.drawable.ic_panel_admin,
+        iconoInactivo = R.drawable.ic_panel_admin_borde,
+        soloAdmin = true
+    ),
     CATALOGO(
         ruta = Rutas.Lista,
         etiqueta = R.string.navegacion_catalogo,
@@ -28,8 +35,8 @@ enum class DestinoPrincipal(
     CATEGORIAS(
         ruta = Rutas.Categorias,
         etiqueta = R.string.navegacion_categorias,
-        iconoActivo = R.drawable.ic_categoria,
-        iconoInactivo = R.drawable.ic_categoria_borde
+        iconoActivo = R.drawable.ic_marca,
+        iconoInactivo = R.drawable.ic_marca_borde
     ),
     CARRITO(
         ruta = Rutas.Carrito,
@@ -37,13 +44,6 @@ enum class DestinoPrincipal(
         iconoActivo = R.drawable.ic_carrito,
         iconoInactivo = R.drawable.ic_carrito_borde,
         soloCliente = true
-    ),
-    ADMIN(
-        ruta = Rutas.Admin,
-        etiqueta = R.string.navegacion_admin,
-        iconoActivo = R.drawable.ic_panel_admin,
-        iconoInactivo = R.drawable.ic_panel_admin_borde,
-        soloAdmin = true
     ),
     ALERTAS(
         ruta = Rutas.Alertas,

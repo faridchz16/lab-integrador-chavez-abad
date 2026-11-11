@@ -48,7 +48,7 @@
     </plurals>
     <string name="alertas_notificacion_y_mas">" y %1$d más"</string>
 
-    <string name="csv_encabezados">ID|Producto|Marca|Categoría|Precio (S/)|Descuento (%%)|Precio final (S/)|Stock|Stock mínimo|Stock máximo|Unidades por pedido|Estado</string>
+    <string name="csv_encabezados">ID|Producto|Marca|Marca del catálogo|Precio (S/)|Descuento (%%)|Precio final (S/)|Stock|Stock mínimo|Stock máximo|Unidades por pedido|Estado</string>
     <string name="csv_estado_disponible">Disponible</string>
     <string name="csv_estado_cerca">Cerca del mínimo</string>
     <string name="csv_estado_bajo">Bajo el mínimo</string>

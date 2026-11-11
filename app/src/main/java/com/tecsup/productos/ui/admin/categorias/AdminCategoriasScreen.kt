@@ -155,7 +155,7 @@ fun AdminCategoriasScreen(
                     EstadoVacio(
                         titulo = stringResource(R.string.categorias_admin_vacio_titulo),
                         mensaje = stringResource(R.string.categorias_admin_vacio_mensaje),
-                        icono = R.drawable.ic_categoria_borde,
+                        icono = R.drawable.ic_marca_borde,
                         accion = {
                             Button(onClick = onNueva) {
                                 Text(text = stringResource(R.string.categorias_admin_nueva))

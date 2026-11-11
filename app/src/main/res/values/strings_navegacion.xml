@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="navegacion_catalogo">Catálogo</string>
-    <string name="navegacion_categorias">Categorías</string>
+    <string name="navegacion_categorias">Marcas</string>
     <string name="navegacion_carrito">Carrito</string>
     <string name="navegacion_admin">Panel</string>
     <string name="navegacion_alertas">Alertas</string>
