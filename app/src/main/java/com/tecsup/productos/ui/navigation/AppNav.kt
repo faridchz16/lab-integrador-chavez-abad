@@ -32,7 +32,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavBackStackEntry
@@ -76,6 +75,9 @@ import com.tecsup.productos.ui.components.LogoStockify
 import com.tecsup.productos.ui.components.SolicitarPermisoNotificaciones
 import com.tecsup.productos.ui.detalle.DetalleScreen
 import com.tecsup.productos.ui.detalle.DetalleViewModel
+import com.tecsup.productos.ui.inicio.AccionesInicio
+import com.tecsup.productos.ui.inicio.InicioScreen
+import com.tecsup.productos.ui.inicio.InicioViewModel
 import com.tecsup.productos.ui.favoritos.FavoritosScreen
 import com.tecsup.productos.ui.favoritos.FavoritosViewModel
 import com.tecsup.productos.ui.lista.AccionesCatalogo
@@ -124,7 +126,11 @@ private fun NavegacionPrincipal(
 ) {
     val navController = rememberNavController()
     val destinoInicial: Rutas = remember {
-        if (sesion != null) Rutas.Lista else Rutas.Login
+        when {
+            sesion == null -> Rutas.Login
+            sesion.rol == Rol.ADMIN -> Rutas.Lista
+            else -> Rutas.Inicio
+        }
     }
     val sesionVigente by rememberUpdatedState(sesion)
     var mostrarDialogoSalir by rememberSaveable { mutableStateOf(false) }
@@ -132,6 +138,7 @@ private fun NavegacionPrincipal(
     val entradaActual by navController.currentBackStackEntryAsState()
     val destinoActual = entradaActual?.destination
     val esAdmin = sesion?.rol == Rol.ADMIN
+    val raizPestanas: Rutas = if (esAdmin) Rutas.Lista else Rutas.Inicio
     val destinosVisibles = remember(esAdmin) {
         DestinoPrincipal.entries.filter { if (esAdmin) !it.soloCliente else !it.soloAdmin }
     }
@@ -144,6 +151,8 @@ private fun NavegacionPrincipal(
     )
     val cantidadFavoritos by insigniasViewModel.favoritos.collectAsStateWithLifecycle()
     val cantidadPorReponer by insigniasViewModel.porReponer.collectAsStateWithLifecycle()
+
+    val peticionCatalogo: PeticionCatalogoViewModel = viewModel()
 
     val carritoViewModel: CarritoViewModel = viewModel(
         factory = CarritoViewModel.factory(container)
@@ -162,7 +171,7 @@ private fun NavegacionPrincipal(
                     duration = SnackbarDuration.Short
                 )
                 if (resultado == SnackbarResult.ActionPerformed) {
-                    navController.irAPestana(DestinoPrincipal.CARRITO)
+                    navController.irAPestana(DestinoPrincipal.CARRITO, raizPestanas)
                 }
             }
         }
@@ -185,7 +194,7 @@ private fun NavegacionPrincipal(
                         DestinoPrincipal.CARRITO to cantidadCarrito,
                         DestinoPrincipal.ALERTAS to cantidadPorReponer
                     ),
-                    onSeleccionar = { destino -> navController.irAPestana(destino) }
+                    onSeleccionar = { destino -> navController.irAPestana(destino, raizPestanas) }
                 )
             }
         }
@@ -214,7 +223,12 @@ private fun NavegacionPrincipal(
                             val actual = estado
                             if (actual is UiState.Exito) {
                                 sesionViewModel.establecer(actual.datos)
-                                navController.navigate(Rutas.Lista) {
+                                val destinoTrasLogin: Rutas = if (actual.datos.rol == Rol.ADMIN) {
+                                    Rutas.Lista
+                                } else {
+                                    Rutas.Inicio
+                                }
+                                navController.navigate(destinoTrasLogin) {
                                     popUpTo<Rutas.Login> { inclusive = true }
                                 }
                             }
@@ -228,10 +242,48 @@ private fun NavegacionPrincipal(
                             onIngresar = viewModel::iniciarSesion
                         )
                     }
+                    pantalla<Rutas.Inicio> {
+                        val viewModel: InicioViewModel = viewModel(
+                            factory = InicioViewModel.factory(container)
+                        )
+                        val estado by viewModel.estado.collectAsStateWithLifecycle()
+                        val acciones = remember(viewModel, raizPestanas) {
+                            AccionesInicio(
+                                onProductoClick = { item ->
+                                    navController.navigate(Rutas.Detalle(item.id, item.imagenUrl))
+                                },
+                                onAgregarAlCarrito = { item -> carritoViewModel.agregar(item) },
+                                onTipoClick = { tipo ->
+                                    peticionCatalogo.pedir(PeticionCatalogo.Tipo(tipo))
+                                    navController.irAPestana(DestinoPrincipal.CATALOGO, raizPestanas)
+                                },
+                                onMarcaClick = { categoria ->
+                                    peticionCatalogo.pedir(PeticionCatalogo.Categoria(categoria.id))
+                                    navController.irAPestana(DestinoPrincipal.CATALOGO, raizPestanas)
+                                },
+                                onVerCatalogo = {
+                                    peticionCatalogo.pedir(PeticionCatalogo.Todo)
+                                    navController.irAPestana(DestinoPrincipal.CATALOGO, raizPestanas)
+                                },
+                                onActualizar = viewModel::sincronizar
+                            )
+                        }
+                        InicioScreen(estado = estado, acciones = acciones)
+                    }
                     pantalla<Rutas.Lista> {
                         val viewModel: ListaViewModel = viewModel(
                             factory = ListaViewModel.factory(container)
                         )
+                        val peticion by peticionCatalogo.peticion.collectAsStateWithLifecycle()
+                        LaunchedEffect(peticion) {
+                            when (val actual = peticion) {
+                                is PeticionCatalogo.Categoria -> viewModel.mostrarCategoria(actual.id)
+                                is PeticionCatalogo.Tipo -> viewModel.mostrarTipo(actual.tipo)
+                                PeticionCatalogo.Todo -> viewModel.limpiarTodo()
+                                null -> return@LaunchedEffect
+                            }
+                            peticionCatalogo.atendida()
+                        }
                         val estado by viewModel.estado.collectAsStateWithLifecycle()
                         val aviso by viewModel.aviso.collectAsStateWithLifecycle()
                         val filtro by viewModel.filtro.collectAsStateWithLifecycle()
@@ -287,16 +339,8 @@ private fun NavegacionPrincipal(
                             estado = estado,
                             onReintentar = viewModel::recargar,
                             onCategoriaClick = { categoria ->
-                                val entradaLista = runCatching {
-                                    navController.getBackStackEntry<Rutas.Lista>()
-                                }.getOrNull()
-                                if (entradaLista != null) {
-                                    ViewModelProvider.create(
-                                        owner = entradaLista,
-                                        factory = ListaViewModel.factory(container)
-                                    )[ListaViewModel::class].mostrarCategoria(categoria.id)
-                                }
-                                navController.irAPestana(DestinoPrincipal.CATALOGO)
+                                peticionCatalogo.pedir(PeticionCatalogo.Categoria(categoria.id))
+                                navController.irAPestana(DestinoPrincipal.CATALOGO, raizPestanas)
                             }
                         )
                     }
@@ -371,7 +415,7 @@ private fun NavegacionPrincipal(
                             },
                             onPedidoMostrado = carritoViewModel::pedidoMostrado,
                             onVerPedidos = { navController.navigate(Rutas.Pedidos) },
-                            onIrCatalogo = { navController.irAPestana(DestinoPrincipal.CATALOGO) },
+                            onIrCatalogo = { navController.irAPestana(DestinoPrincipal.CATALOGO, raizPestanas) },
                             onReintentar = carritoViewModel::recargar
                         )
                     }
@@ -574,9 +618,13 @@ private inline fun <reified T : Rutas> NavGraphBuilder.pantalla(
     }
 }
 
-private fun NavHostController.irAPestana(destino: DestinoPrincipal) {
+private fun NavHostController.irAPestana(destino: DestinoPrincipal, raiz: Rutas) {
     navigate(destino.ruta) {
-        popUpTo<Rutas.Lista> { saveState = true }
+        if (raiz is Rutas.Inicio) {
+            popUpTo<Rutas.Inicio> { saveState = true }
+        } else {
+            popUpTo<Rutas.Lista> { saveState = true }
+        }
         launchSingleTop = true
         restoreState = true
     }

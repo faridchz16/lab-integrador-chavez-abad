@@ -12,6 +12,13 @@ enum class DestinoPrincipal(
     val soloAdmin: Boolean = false,
     val soloCliente: Boolean = false
 ) {
+    INICIO(
+        ruta = Rutas.Inicio,
+        etiqueta = R.string.navegacion_inicio,
+        iconoActivo = R.drawable.ic_inicio,
+        iconoInactivo = R.drawable.ic_inicio_borde,
+        soloCliente = true
+    ),
     CATALOGO(
         ruta = Rutas.Lista,
         etiqueta = R.string.navegacion_catalogo,

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="inicio_eslogan">Tecnología al mejor precio</string>
+    <string name="inicio_buscar">Buscar productos</string>
+    <string name="inicio_etiqueta_nuevo">NUEVO</string>
+    <string name="inicio_oferta_destacada">Oferta destacada</string>
+    <string name="inicio_agregar">Agregar al carrito</string>
+    <string name="inicio_ver_productos">Ver productos</string>
+    <string name="inicio_banner_smartphone">Smartphones de las mejores marcas</string>
+    <string name="inicio_banner_tablet">Tablets para estudiar y crear</string>
+    <string name="inicio_banner_reloj">Tu salud y tus mensajes en la muñeca</string>
+    <string name="inicio_banner_accesorio">Accesorios que completan tu equipo</string>
+    <string name="inicio_banner_desde">Desde %1$s · %2$s</string>
+    <plurals name="inicio_productos">
+        <item quantity="one">%1$d producto</item>
+        <item quantity="many">%1$d productos</item>
+        <item quantity="other">%1$d productos</item>
+    </plurals>
+    <string name="inicio_indicador">Ir al anuncio %1$d</string>
+    <string name="inicio_compra_por_tipo">Compra por tipo</string>
+    <string name="inicio_ofertas">Ofertas del día</string>
+    <string name="inicio_nuevos">Nuevos en Stockify</string>
+    <string name="inicio_marcas">Marcas</string>
+    <string name="inicio_mejor_valorados">Mejor valorados</string>
+    <string name="inicio_ver_todo">Ver todo</string>
+    <string name="inicio_calificacion">★ %1$.1f</string>
+    <string name="inicio_beneficio_soles">Precios en soles</string>
+    <string name="inicio_beneficio_stock">Stock en tiempo real</string>
+    <string name="inicio_beneficio_sin_conexion">Funciona sin conexión</string>
+    <string name="inicio_ver_catalogo">Ver todo el catálogo</string>
+    <string name="inicio_vacio_titulo">Aún no hay productos</string>
+    <string name="inicio_vacio_mensaje">Conéctate a internet y actualiza para ver las ofertas.</string>
+    <string name="inicio_actualizar">Actualizar</string>
+</resources>

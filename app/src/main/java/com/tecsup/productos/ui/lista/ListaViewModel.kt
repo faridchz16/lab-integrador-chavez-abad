@@ -14,6 +14,7 @@ import com.tecsup.productos.data.repository.ItemRepository
 import com.tecsup.productos.domain.catalogo.FiltroCatalogo
 import com.tecsup.productos.domain.model.Categoria
 import com.tecsup.productos.domain.model.Item
+import com.tecsup.productos.domain.model.TipoProducto
 import com.tecsup.productos.domain.model.precioFinal
 import com.tecsup.productos.notification.Notificador
 import com.tecsup.productos.ui.UiState
@@ -151,7 +152,11 @@ class ListaViewModel(
     }
 
     fun mostrarCategoria(id: Long) {
-        _filtro.update { it.copy(categorias = setOf(id)) }
+        _filtro.update { it.copy(categorias = setOf(id), tipos = emptySet()) }
+    }
+
+    fun mostrarTipo(tipo: TipoProducto) {
+        _filtro.update { it.copy(categorias = emptySet(), tipos = setOf(tipo)) }
     }
 
     fun aplicarFiltros(nuevo: FiltroCatalogo) {

@@ -7,6 +7,9 @@ sealed interface Rutas {
     data object Login : Rutas
 
     @Serializable
+    data object Inicio : Rutas
+
+    @Serializable
     data object Lista : Rutas
 
     @Serializable
